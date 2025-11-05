@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "GoHusky API",
+  "name": "Husky Tecnologia",
   "colors": {
     "primary": "#1665a3",
     "light": "#0773c9",
@@ -24,7 +24,7 @@
         ]
       },
       {
-        "tab": "API",
+        "tab": "API Pública",
         "groups": [
           {
             "group": "Introdução",
@@ -75,13 +75,36 @@
           {
             "group": "Autenticação",
             "pages": [
-              "open-delivery/oauth/token"
+              "api-open-delivery/autenticacao/oauth-token"
             ]
           },
           {
-            "group": "Logistica",
+            "group": "Entregas",
             "pages": [
-              "open-delivery/logistic/delivery"
+              "api-open-delivery/entregas/delivery",
+              "api-open-delivery/entregas/ready-for-pickup",
+              "api-open-delivery/entregas/order-picked",
+              "api-open-delivery/entregas/finish-delivery",
+              "api-open-delivery/entregas/handle-problem",
+              "api-open-delivery/entregas/cancel-delivery"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "api-open-delivery/webhooks/tracking-event"
+            ]
+          },
+          {
+            "group": "Detalhes da entrega",
+            "pages": [
+              "api-open-delivery/detalhes-da-entrega/delivery"
+            ]
+          },
+          {
+            "group": "Cotação de entrega",
+            "pages": [
+              "api-open-delivery/cotacao-de-entrega/availability"
             ]
           }
         ]

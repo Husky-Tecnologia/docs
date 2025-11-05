@@ -1,0 +1,81 @@
+{
+    "path": "/v1/logistics/finishDelivery/{orderId}",
+    "methods": {
+        "post": {
+            "tags": [
+                "Entregas"
+            ],
+            "summary": "Finalizar entrega",
+            "description": "Notifica o sistema que uma entrega foi finalizada.\n\n**Nota:** Este endpoint está atualmente em desenvolvimento e não processa o evento, apenas confirma o recebimento.",
+            "operationId": "finishDelivery",
+            "security": [
+                {
+                    "BearerAuth": []
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "orderId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Identificador único do pedido",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "example": "ORDER-12345"
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Evento recebido com sucesso (não implementado)",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SuccessResponse"
+                            },
+                            "examples": {
+                                "success": {
+                                    "summary": "Evento recebido",
+                                    "value": {
+                                        "title": "Evento recebido com sucesso, porém não foi implementado.",
+                                        "status": 200
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Erro na requisição",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "error": {
+                                    "summary": "Erro inesperado",
+                                    "value": {
+                                        "title": "Erro inesperado.",
+                                        "status": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Não autorizado - Token inválido ou ausente",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

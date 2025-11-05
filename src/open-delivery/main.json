@@ -1,0 +1,31 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "API Módulo Logístico",
+        "description": "API para integração com o módulo logístico do OpenDelivery.\n\nEsta API utiliza autenticação OAuth 2.0 com o fluxo Client Credentials para obter tokens de acesso.\nTodos os endpoints protegidos requerem o token de acesso no header Authorization.\n",
+        "version": "1.2.0",
+        "contact": {
+            "name": "Suporte OpenDelivery"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://opendelivery.gohusky.net/logistic",
+            "description": "Servidor de produção"
+        },
+        {
+            "url": "https://sandbox.opendelivery.gohusky.net/logistic",
+            "description": "Servidor Homologação"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Autenticação",
+            "description": "Endpoints relacionados à autenticação e obtenção de tokens de acesso"
+        },
+        {
+            "name": "Entregas",
+            "description": "Endpoints relacionados à gestão de entregas e pedidos logísticos"
+        }
+    ]
+}

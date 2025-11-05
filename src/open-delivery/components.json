@@ -1,0 +1,967 @@
+{
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Token de acesso OAuth 2.0 obtido através do endpoint `/oauth/token`.\n\nUse o formato: `Authorization: Bearer {access_token}`\n\nO token deve ser incluído em todas as requisições aos endpoints protegidos.\n"
+            }
+        },
+        "schemas": {
+            "AccessTokenResponse": {
+                "type": "object",
+                "required": [
+                    "access_token",
+                    "token_type",
+                    "expires_in"
+                ],
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "description": "Token de acesso OAuth 2.0 que deve ser usado para autenticar requisições subsequentes",
+                        "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoi..."
+                    },
+                    "token_type": {
+                        "type": "string",
+                        "description": "Tipo do token, sempre \"Bearer\"",
+                        "enum": [
+                            "Bearer"
+                        ],
+                        "example": "Bearer"
+                    },
+                    "expires_in": {
+                        "type": "integer",
+                        "description": "Tempo de expiração do token em segundos (7 dias = 604800 segundos)",
+                        "example": 604800
+                    }
+                }
+            },
+            "ErrorResponse": {
+                "type": "object",
+                "required": [
+                    "title",
+                    "status"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "Mensagem de erro descritiva",
+                        "example": "Não autorizado"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "description": "Código de status HTTP",
+                        "example": 401
+                    }
+                }
+            },
+            "NewDeliveryRequest": {
+                "type": "object",
+                "required": [
+                    "orderId",
+                    "orderDisplayId",
+                    "merchant",
+                    "pickupAddress",
+                    "returnToMerchant",
+                    "canCombine",
+                    "deliveryAddress",
+                    "customerName",
+                    "vehicle",
+                    "totalOrderPrice",
+                    "totalWeight",
+                    "payments"
+                ],
+                "properties": {
+                    "orderId": {
+                        "type": "string",
+                        "description": "Identificador único do pedido no sistema do cliente",
+                        "example": "ORDER-12345"
+                    },
+                    "orderDisplayId": {
+                        "type": "string",
+                        "description": "Identificador de exibição do pedido",
+                        "example": "ORD-12345"
+                    },
+                    "merchant": {
+                        "$ref": "#/components/schemas/MerchantData"
+                    },
+                    "pickupAddress": {
+                        "$ref": "#/components/schemas/AddressData"
+                    },
+                    "notifyPickup": {
+                        "type": "boolean",
+                        "description": "Se deve notificar quando a coleta for iniciada",
+                        "example": true
+                    },
+                    "notifyConclusion": {
+                        "type": "boolean",
+                        "description": "Se deve notificar quando a entrega for concluída",
+                        "example": true
+                    },
+                    "returnToMerchant": {
+                        "type": "boolean",
+                        "description": "Se a entrega deve retornar ao merchant em caso de falha",
+                        "example": false
+                    },
+                    "canCombine": {
+                        "type": "boolean",
+                        "description": "Se a entrega pode ser combinada com outras",
+                        "example": false
+                    },
+                    "deliveryAddress": {
+                        "$ref": "#/components/schemas/AddressData"
+                    },
+                    "customerName": {
+                        "type": "string",
+                        "description": "Nome do cliente",
+                        "example": "João Silva"
+                    },
+                    "customerPhone": {
+                        "type": "string",
+                        "description": "Telefone do cliente (formato internacional recomendado)",
+                        "example": "+5511999999999"
+                    },
+                    "vehicle": {
+                        "$ref": "#/components/schemas/VehicleData"
+                    },
+                    "limitTimes": {
+                        "$ref": "#/components/schemas/LimitTimesData"
+                    },
+                    "totalOrderPrice": {
+                        "$ref": "#/components/schemas/PriceData"
+                    },
+                    "orderDeliveryFee": {
+                        "$ref": "#/components/schemas/PriceData"
+                    },
+                    "totalWeight": {
+                        "type": "integer",
+                        "description": "Peso total do pedido em gramas",
+                        "minimum": 0,
+                        "example": 500
+                    },
+                    "packageVolume": {
+                        "type": "integer",
+                        "description": "Volume do pacote em centímetros cúbicos",
+                        "minimum": 0,
+                        "example": 2000
+                    },
+                    "packageQuantity": {
+                        "type": "integer",
+                        "description": "Quantidade de pacotes",
+                        "minimum": 1,
+                        "example": 1
+                    },
+                    "specialInstructions": {
+                        "type": "string",
+                        "description": "Instruções especiais para a entrega",
+                        "example": "Produto frágil"
+                    },
+                    "additionalPricePercentual": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Percentual adicional no preço (0-100)",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "example": 10.5
+                    },
+                    "payments": {
+                        "$ref": "#/components/schemas/PaymentsData"
+                    },
+                    "combinedOrdersIds": {
+                        "type": "array",
+                        "description": "IDs de pedidos combinados",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": ["ORDER-123", "ORDER-124"]
+                    },
+                    "sourceAppId": {
+                        "type": "string",
+                        "description": "ID da aplicação de origem",
+                        "example": "APP-001"
+                    },
+                    "sourceOrderId": {
+                        "type": "string",
+                        "description": "ID do pedido no sistema de origem",
+                        "example": "SRC-12345"
+                    },
+                    "customerPhoneLocalizer": {
+                        "type": "string",
+                        "description": "Localizador do telefone do cliente",
+                        "example": "whatsapp"
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Metadados adicionais em formato JSON",
+                        "additionalProperties": true,
+                        "example": {
+                            "orderSource": "mobile_app",
+                            "priority": "high"
+                        }
+                    }
+                }
+            },
+            "NewDeliveryResponse": {
+                "type": "object",
+                "required": [
+                    "deliveryId",
+                    "event",
+                    "completion"
+                ],
+                "properties": {
+                    "deliveryId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Identificador único da entrega criada",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "event": {
+                        "type": "string",
+                        "enum": [
+                            "PENDING"
+                        ],
+                        "description": "Status inicial do evento da entrega",
+                        "example": "PENDING"
+                    },
+                    "completion": {
+                        "type": "object",
+                        "required": [
+                            "estimate",
+                            "rejectAfter"
+                        ],
+                        "properties": {
+                            "estimate": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Data e hora estimada para conclusão da entrega (ISO 8601)",
+                                "example": "2024-01-15T11:30:00.000Z"
+                            },
+                            "rejectAfter": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Data e hora após a qual a entrega será rejeitada automaticamente se não for aceita (ISO 8601)",
+                                "example": "2024-01-15T12:00:00.000Z"
+                            }
+                        }
+                    }
+                }
+            },
+            "AddressData": {
+                "type": "object",
+                "required": [
+                    "country",
+                    "state",
+                    "city",
+                    "district",
+                    "street",
+                    "number"
+                ],
+                "properties": {
+                    "country": {
+                        "type": "string",
+                        "description": "País",
+                        "example": "Brasil"
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "Estado (sigla)",
+                        "example": "SP"
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "Cidade",
+                        "example": "São Paulo"
+                    },
+                    "district": {
+                        "type": "string",
+                        "description": "Bairro",
+                        "example": "Centro"
+                    },
+                    "street": {
+                        "type": "string",
+                        "description": "Rua",
+                        "example": "Rua Exemplo"
+                    },
+                    "number": {
+                        "type": "string",
+                        "description": "Número",
+                        "example": "123"
+                    },
+                    "postalCode": {
+                        "type": "string",
+                        "description": "CEP",
+                        "example": "01310-100"
+                    },
+                    "complement": {
+                        "type": "string",
+                        "description": "Complemento",
+                        "example": "Apto 45"
+                    },
+                    "reference": {
+                        "type": "string",
+                        "description": "Ponto de referência",
+                        "example": "Próximo ao metrô"
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude do endereço",
+                        "example": -23.5505
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude do endereço",
+                        "example": -46.6333
+                    },
+                    "pickupLocation": {
+                        "type": "string",
+                        "description": "Local de coleta específico",
+                        "example": "Balcão"
+                    },
+                    "parkingSpace": {
+                        "type": "boolean",
+                        "description": "Se há espaço para estacionamento",
+                        "example": true
+                    },
+                    "instructions": {
+                        "type": "string",
+                        "description": "Instruções específicas para o endereço",
+                        "example": "Entregar na recepção"
+                    }
+                }
+            },
+            "MerchantData": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Identificador único do merchant",
+                        "example": "MERCHANT-001"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Nome do merchant",
+                        "example": "Restaurante Exemplo"
+                    }
+                }
+            },
+            "VehicleData": {
+                "type": "object",
+                "required": [
+                    "type",
+                    "container"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "array",
+                        "description": "Tipos de veículo aceitos para a entrega",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "MOTORBIKE_BAG",
+                                "MOTORBIKE_BOX",
+                                "CAR",
+                                "BICYCLE",
+                                "SCOOTER",
+                                "VUC"
+                            ]
+                        },
+                        "minItems": 1,
+                        "example": ["MOTORBIKE_BAG"]
+                    },
+                    "container": {
+                        "type": "string",
+                        "enum": [
+                            "NORMAL",
+                            "THERMIC"
+                        ],
+                        "description": "Tipo de container necessário",
+                        "example": "NORMAL"
+                    },
+                    "containerSize": {
+                        "type": "string",
+                        "enum": [
+                            "SMALL",
+                            "MEDIUM",
+                            "LARGE",
+                            "EXTRA_LARGE"
+                        ],
+                        "description": "Tamanho do container (opcional, apenas para container térmico)",
+                        "example": "MEDIUM"
+                    },
+                    "instruction": {
+                        "type": "string",
+                        "description": "Instruções específicas sobre o veículo/container",
+                        "example": "Manter refrigerado"
+                    }
+                }
+            },
+            "PriceData": {
+                "type": "object",
+                "required": [
+                    "value",
+                    "currency"
+                ],
+                "properties": {
+                    "value": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Valor monetário",
+                        "minimum": 0,
+                        "example": 45.50
+                    },
+                    "currency": {
+                        "type": "string",
+                        "enum": [
+                            "BRL",
+                            "USD",
+                            "EUR"
+                        ],
+                        "description": "Moeda",
+                        "example": "BRL"
+                    }
+                }
+            },
+            "LimitTimesData": {
+                "type": "object",
+                "properties": {
+                    "pickupLimit": {
+                        "type": "integer",
+                        "description": "Tempo limite para coleta em minutos",
+                        "minimum": 0,
+                        "example": 30
+                    },
+                    "deliveryLimit": {
+                        "type": "integer",
+                        "description": "Tempo limite para entrega em minutos",
+                        "minimum": 0,
+                        "example": 60
+                    },
+                    "orderCreatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data e hora de criação do pedido (ISO 8601)",
+                        "example": "2024-01-15T10:30:00.000Z"
+                    }
+                }
+            },
+            "PaymentsData": {
+                "type": "object",
+                "required": [
+                    "method"
+                ],
+                "properties": {
+                    "method": {
+                        "type": "string",
+                        "enum": [
+                            "ONLINE",
+                            "OFFLINE"
+                        ],
+                        "description": "Método de pagamento",
+                        "example": "ONLINE"
+                    },
+                    "wirelessPos": {
+                        "type": "boolean",
+                        "description": "Se deve usar máquina de cartão sem fio",
+                        "example": false
+                    },
+                    "offlineMethod": {
+                        "type": "array",
+                        "description": "Métodos de pagamento offline (obrigatório quando method é OFFLINE)",
+                        "items": {
+                            "$ref": "#/components/schemas/PaymentOfflineMethodData"
+                        },
+                        "example": [
+                            {
+                                "type": "CREDIT",
+                                "amount": {
+                                    "value": 100.00,
+                                    "currency": "BRL"
+                                }
+                            }
+                        ]
+                    },
+                    "change": {
+                        "$ref": "#/components/schemas/PriceData",
+                        "description": "Valor de troco necessário"
+                    }
+                }
+            },
+            "PaymentOfflineMethodData": {
+                "type": "object",
+                "required": [
+                    "type",
+                    "amount"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "CREDIT",
+                            "DEBIT",
+                            "MEAL_VOUCHER",
+                            "FOOD_VOUCHER",
+                            "PIX",
+                            "CASH",
+                            "CREDIT_DEBIT",
+                            "OTHER"
+                        ],
+                        "description": "Tipo de método de pagamento offline",
+                        "example": "CREDIT"
+                    },
+                    "amount": {
+                        "$ref": "#/components/schemas/PriceData"
+                    }
+                }
+            },
+            "CheckAvailabilityRequest": {
+                "type": "object",
+                "required": [
+                    "pickupAddress",
+                    "returnToMerchant",
+                    "canCombine",
+                    "deliveryAddress",
+                    "vehicle",
+                    "limitTimes",
+                    "totalOrderPrice",
+                    "totalWeight"
+                ],
+                "properties": {
+                    "merchant": {
+                        "$ref": "#/components/schemas/MerchantData"
+                    },
+                    "pickupAddress": {
+                        "$ref": "#/components/schemas/AddressData"
+                    },
+                    "returnToMerchant": {
+                        "type": "boolean",
+                        "description": "Se a entrega deve retornar ao merchant em caso de falha",
+                        "example": false
+                    },
+                    "canCombine": {
+                        "type": "boolean",
+                        "description": "Se a entrega pode ser combinada com outras",
+                        "example": false
+                    },
+                    "deliveryAddress": {
+                        "$ref": "#/components/schemas/AddressData"
+                    },
+                    "vehicle": {
+                        "$ref": "#/components/schemas/VehicleData"
+                    },
+                    "limitTimes": {
+                        "$ref": "#/components/schemas/LimitTimesData"
+                    },
+                    "totalOrderPrice": {
+                        "$ref": "#/components/schemas/PriceData"
+                    },
+                    "orderDeliveryFee": {
+                        "$ref": "#/components/schemas/PriceData"
+                    },
+                    "totalWeight": {
+                        "type": "integer",
+                        "description": "Peso total do pedido em gramas",
+                        "minimum": 0,
+                        "example": 500
+                    },
+                    "packageVolume": {
+                        "type": "integer",
+                        "description": "Volume do pacote em centímetros cúbicos",
+                        "minimum": 0,
+                        "example": 2000
+                    },
+                    "packageQuantity": {
+                        "type": "integer",
+                        "description": "Quantidade de pacotes",
+                        "minimum": 1,
+                        "example": 1
+                    },
+                    "specialInstructions": {
+                        "type": "string",
+                        "description": "Instruções especiais para a entrega",
+                        "example": "Produto frágil"
+                    },
+                    "additionalPricePercentual": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Percentual adicional no preço (0-100)",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "example": 10.5
+                    },
+                    "onlinePayment": {
+                        "type": "boolean",
+                        "description": "Se o pagamento é online",
+                        "example": true
+                    }
+                }
+            },
+            "CheckAvailabilityResponse": {
+                "type": "object",
+                "required": [
+                    "deliveryPrice",
+                    "vehicles"
+                ],
+                "properties": {
+                    "deliveryPrice": {
+                        "$ref": "#/components/schemas/PriceData"
+                    },
+                    "vehicles": {
+                        "type": "object",
+                        "required": [
+                            "availableVehicles",
+                            "vehiclesAvailable"
+                        ],
+                        "properties": {
+                            "availableVehicles": {
+                                "type": "integer",
+                                "description": "Quantidade total de veículos disponíveis",
+                                "minimum": 0,
+                                "example": 15
+                            },
+                            "vehiclesAvailable": {
+                                "type": "object",
+                                "required": [
+                                    "type",
+                                    "container"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "array",
+                                        "description": "Tipos de veículos disponíveis",
+                                        "items": {
+                                            "type": "string",
+                                            "enum": [
+                                                "MOTORBIKE_BAG",
+                                                "MOTORBIKE_BOX",
+                                                "CAR",
+                                                "BICYCLE",
+                                                "SCOOTER",
+                                                "VUC"
+                                            ]
+                                        },
+                                        "example": ["MOTORBIKE_BAG", "CAR"]
+                                    },
+                                    "container": {
+                                        "type": "string",
+                                        "enum": [
+                                            "NORMAL",
+                                            "THERMIC"
+                                        ],
+                                        "description": "Tipo de container disponível",
+                                        "example": "NORMAL"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "SuccessResponse": {
+                "type": "object",
+                "required": [
+                    "title",
+                    "status"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "Mensagem de sucesso",
+                        "example": "Evento recebido com sucesso"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "description": "Código de status HTTP",
+                        "example": 200
+                    }
+                }
+            },
+            "HandleProblemRequest": {
+                "type": "object",
+                "required": [
+                    "reason",
+                    "action"
+                ],
+                "properties": {
+                    "reason": {
+                        "type": "string",
+                        "enum": [
+                            "DELIVERYPERSON_OCCURRENCE",
+                            "PAYMENT_PROBLEMS",
+                            "WRONG_PRODUCT_OR_ITEM",
+                            "ORDER_DELAYED",
+                            "ORDER_DAMAGED_OR_VIOLATED",
+                            "CUSTOMER_DID_NOT_PLACE_ORDER",
+                            "CUSTOMER_ADDRESS_UNKNOWN",
+                            "ORDER_MISSING_ITEMS",
+                            "NOBODY_TO_RECEIVE",
+                            "DELIVERYPERSON_WAITING_PAYMENT_FOR_ALREADY_PAID_ORDER",
+                            "ORDER_DELIVERED_WITHOUT_PAYMENT",
+                            "FRAUD_OR_THEFT",
+                            "OTHER"
+                        ],
+                        "description": "Motivo do problema",
+                        "example": "PAYMENT_PROBLEMS"
+                    },
+                    "action": {
+                        "type": "string",
+                        "enum": [
+                            "RETURN_TO_STORE",
+                            "DELIVER_PRODUCT",
+                            "CANCEL_DELIVERY"
+                        ],
+                        "description": "Ação tomada para resolver o problema",
+                        "example": "RETURN_TO_STORE"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Mensagem adicional sobre o problema",
+                        "example": "Cliente não possui o valor exato para pagamento"
+                    }
+                }
+            },
+            "CancelDeliveryRequest": {
+                "type": "object",
+                "required": [
+                    "reason"
+                ],
+                "properties": {
+                    "reason": {
+                        "type": "string",
+                        "enum": [
+                            "CONSUMER_CANCELLATION_REQUESTED",
+                            "NO_SHOW",
+                            "PROBLEM_AT_MERCHANT",
+                            "HIGH_ACCEPTANCE_TIME",
+                            "INCORRECT_ORDER_OR_PRODUCT_PICKUP",
+                            "PROBLEM_RESOLUTION",
+                            "DISCOMBINE_ORDER",
+                            "OTHER"
+                        ],
+                        "description": "Motivo do cancelamento",
+                        "example": "CONSUMER_CANCELLATION_REQUESTED"
+                    },
+                    "action": {
+                        "type": "string",
+                        "enum": [
+                            "RETURN_TO_STORE",
+                            "CANCEL_DELIVERY"
+                        ],
+                        "description": "Ação a ser tomada após o cancelamento",
+                        "example": "CANCEL_DELIVERY"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Mensagem adicional sobre o cancelamento",
+                        "example": "Cliente solicitou cancelamento"
+                    }
+                }
+            },
+            "CancelDeliveryResponse": {
+                "type": "object",
+                "required": [
+                    "additionalCharges"
+                ],
+                "properties": {
+                    "additionalCharges": {
+                        "type": "boolean",
+                        "description": "Se há cobranças adicionais associadas ao cancelamento",
+                        "example": false
+                    }
+                }
+            },
+            "DeliveryDetailsResponse": {
+                "type": "object",
+                "properties": {
+                    "deliveryId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Identificador único da entrega",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "orderId": {
+                        "type": "string",
+                        "description": "Identificador único do pedido",
+                        "example": "ORDER-12345"
+                    },
+                    "orderDisplayId": {
+                        "type": "string",
+                        "description": "Identificador de exibição do pedido",
+                        "example": "ORD-12345"
+                    },
+                    "merchant": {
+                        "$ref": "#/components/schemas/MerchantData"
+                    },
+                    "customerName": {
+                        "type": "string",
+                        "description": "Nome do cliente",
+                        "example": "João Silva"
+                    },
+                    "events": {
+                        "type": "array",
+                        "description": "Lista de eventos da entrega",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "datetime"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "PENDING",
+                                        "ACCEPTED",
+                                        "REJECTED",
+                                        "PICKUP_ONGOING",
+                                        "ARRIVED_AT_MERCHANT",
+                                        "ORDER_PICKED",
+                                        "DELIVERY_ONGOING",
+                                        "ARRIVED_AT_CUSTOMER",
+                                        "ORDER_DELIVERED",
+                                        "RETURNING_TO_MERCHANT",
+                                        "RETURNED_TO_MERCHANT",
+                                        "DELIVERY_FINISHED",
+                                        "CANCELLED"
+                                    ],
+                                    "description": "Tipo do evento",
+                                    "example": "ACCEPTED"
+                                },
+                                "datetime": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Data e hora do evento (ISO 8601)",
+                                    "example": "2024-01-15T10:35:00.000Z"
+                                }
+                            }
+                        }
+                    },
+                    "problem": {
+                        "type": "array",
+                        "description": "Lista de problemas reportados",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "description": "Tipo do problema",
+                                    "example": "PAYMENT_PROBLEMS"
+                                },
+                                "datetime": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Data e hora do problema (ISO 8601)",
+                                    "example": "2024-01-15T11:00:00.000Z"
+                                },
+                                "resolved": {
+                                    "type": "boolean",
+                                    "description": "Se o problema foi resolvido",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "description": "Mensagem sobre o problema",
+                                    "example": "Cliente não possui o valor exato"
+                                }
+                            }
+                        }
+                    },
+                    "vehicle": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "array",
+                                "description": "Tipos de veículo",
+                                "items": {
+                                    "type": "string",
+                                    "enum": [
+                                        "MOTORBIKE_BAG",
+                                        "MOTORBIKE_BOX",
+                                        "CAR",
+                                        "BICYCLE",
+                                        "SCOOTER",
+                                        "VUC"
+                                    ]
+                                }
+                            },
+                            "container": {
+                                "type": "string",
+                                "enum": [
+                                    "NORMAL",
+                                    "THERMIC"
+                                ],
+                                "description": "Tipo de container"
+                            }
+                        }
+                    },
+                    "deliveryPrice": {
+                        "$ref": "#/components/schemas/PriceData"
+                    },
+                    "times": {
+                        "type": "object",
+                        "properties": {
+                            "deliveryEtaDate": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Data e hora estimada para entrega (ISO 8601)",
+                                "example": "2024-01-15T11:30:00.000Z"
+                            },
+                            "maxDeliveryTime": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Data e hora máxima para entrega (ISO 8601)",
+                                "example": "2024-01-15T12:00:00.000Z"
+                            },
+                            "isDeliveryFinished": {
+                                "type": "boolean",
+                                "description": "Se a entrega foi finalizada",
+                                "example": false
+                            },
+                            "deliveryFinishDate": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Data e hora de finalização da entrega (ISO 8601, apenas se isDeliveryFinished for true)",
+                                "example": "2024-01-15T11:45:00.000Z"
+                            }
+                        }
+                    },
+                    "deliveryPerson": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "description": "Identificador do entregador",
+                                "example": "DELIVERY-001"
+                            },
+                            "name": {
+                                "type": "string",
+                                "description": "Nome do entregador",
+                                "example": "Entregador Exemplo"
+                            }
+                        }
+                    },
+                    "combinedOrdersIds": {
+                        "type": "array",
+                        "description": "IDs de pedidos combinados",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": ["ORDER-123", "ORDER-124"]
+                    },
+                    "externalTrackingURL": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "URL externa para rastreamento",
+                        "example": "https://tracking.example.com/ORDER-12345"
+                    }
+                }
+            }
+        }
+    }
+}

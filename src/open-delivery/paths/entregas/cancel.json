@@ -1,0 +1,127 @@
+{
+    "path": "/v1/logistics/cancel/{orderId}",
+    "methods": {
+        "post": {
+            "tags": [
+                "Entregas"
+            ],
+            "summary": "Cancelar entrega",
+            "description": "Cancela uma entrega existente.\n\nEste endpoint permite cancelar uma entrega que já foi criada. O sistema retorna se há cobranças adicionais associadas ao cancelamento.",
+            "operationId": "cancelDelivery",
+            "security": [
+                {
+                    "BearerAuth": []
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "orderId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Identificador único do pedido",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "example": "ORDER-12345"
+                }
+            ],
+            "requestBody": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/CancelDeliveryRequest"
+                        },
+                        "examples": {
+                            "consumer_cancellation": {
+                                "summary": "Cancelamento pelo consumidor",
+                                "value": {
+                                    "reason": "CONSUMER_CANCELLATION_REQUESTED",
+                                    "action": "CANCEL_DELIVERY",
+                                    "message": "Cliente solicitou cancelamento"
+                                }
+                            },
+                            "no_show": {
+                                "summary": "Cliente não compareceu",
+                                "value": {
+                                    "reason": "NO_SHOW",
+                                    "action": "RETURN_TO_STORE",
+                                    "message": "Cliente não estava no endereço"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "202": {
+                    "description": "Cancelamento aceito para processamento",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CancelDeliveryResponse"
+                            },
+                            "examples": {
+                                "success": {
+                                    "summary": "Cancelamento aceito",
+                                    "value": {
+                                        "additionalCharges": false
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Erro na requisição",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "error": {
+                                    "summary": "Erro inesperado",
+                                    "value": {
+                                        "title": "Erro inesperado.",
+                                        "status": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Não autorizado - Token inválido ou ausente",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Pedido não encontrado",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "not_found": {
+                                    "summary": "Pedido não encontrado",
+                                    "value": {
+                                        "title": "Pedido não encontrado.",
+                                        "status": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

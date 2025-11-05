@@ -1,0 +1,148 @@
+{
+    "path": "/v1/logistics/availability",
+    "methods": {
+        "post": {
+            "tags": [
+                "Entregas"
+            ],
+            "summary": "Verificar disponibilidade e preços de entrega",
+            "description": "Verifica a disponibilidade de veículos e calcula os preços de entrega para uma rota específica.\n\nEste endpoint permite verificar se há veículos disponíveis para realizar uma entrega e obter informações sobre os preços antes de criar uma nova solicitação de entrega.\n\n**Informações retornadas:**\n- Preço de entrega calculado\n- Veículos disponíveis e seus tipos\n- Quantidade total de veículos disponíveis",
+            "operationId": "checkDeliveryAvailability",
+            "security": [
+                {
+                    "BearerAuth": []
+                }
+            ],
+            "requestBody": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/CheckAvailabilityRequest"
+                        },
+                        "examples": {
+                            "basic_check": {
+                                "summary": "Verificação básica",
+                                "value": {
+                                    "merchant": {
+                                        "id": "MERCHANT-001",
+                                        "name": "Restaurante Exemplo"
+                                    },
+                                    "pickupAddress": {
+                                        "country": "Brasil",
+                                        "state": "SP",
+                                        "city": "São Paulo",
+                                        "district": "Centro",
+                                        "street": "Rua Exemplo",
+                                        "number": "123",
+                                        "postalCode": "01310-100",
+                                        "latitude": -23.5505,
+                                        "longitude": -46.6333
+                                    },
+                                    "returnToMerchant": false,
+                                    "canCombine": false,
+                                    "deliveryAddress": {
+                                        "country": "Brasil",
+                                        "state": "SP",
+                                        "city": "São Paulo",
+                                        "district": "Pinheiros",
+                                        "street": "Av. Exemplo",
+                                        "number": "456",
+                                        "postalCode": "05433-000",
+                                        "latitude": -23.5675,
+                                        "longitude": -46.6925
+                                    },
+                                    "vehicle": {
+                                        "type": ["MOTORBIKE_BAG"],
+                                        "container": "NORMAL",
+                                        "containerSize": null,
+                                        "instruction": null
+                                    },
+                                    "limitTimes": {
+                                        "pickupLimit": 30,
+                                        "deliveryLimit": 60,
+                                        "orderCreatedAt": "2024-01-15T10:30:00.000Z"
+                                    },
+                                    "totalOrderPrice": {
+                                        "value": 45.50,
+                                        "currency": "BRL"
+                                    },
+                                    "orderDeliveryFee": {
+                                        "value": 8.50,
+                                        "currency": "BRL"
+                                    },
+                                    "totalWeight": 500,
+                                    "packageVolume": 2000,
+                                    "packageQuantity": 1,
+                                    "specialInstructions": null,
+                                    "additionalPricePercentual": null,
+                                    "onlinePayment": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "Disponibilidade e preços calculados com sucesso",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CheckAvailabilityResponse"
+                            },
+                            "examples": {
+                                "success": {
+                                    "summary": "Resposta de sucesso",
+                                    "value": {
+                                        "deliveryPrice": {
+                                            "value": 8.50,
+                                            "currency": "BRL"
+                                        },
+                                        "vehicles": {
+                                            "availableVehicles": 15,
+                                            "vehiclesAvailable": {
+                                                "type": ["MOTORBIKE_BAG", "CAR"],
+                                                "container": "NORMAL"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Requisição inválida",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "error": {
+                                    "summary": "Erro inesperado",
+                                    "value": {
+                                        "title": "Erro inesperado.",
+                                        "status": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Não autorizado - Token inválido ou ausente",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

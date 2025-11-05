@@ -1,0 +1,109 @@
+{
+    "path": "/v1/logistics/handleProblem/{orderId}",
+    "methods": {
+        "post": {
+            "tags": [
+                "Entregas"
+            ],
+            "summary": "Reportar problema na entrega",
+            "description": "Reporta um problema ocorrido durante a entrega e a ação tomada para resolvê-lo.\n\nEste endpoint permite informar problemas que ocorreram durante o processo de entrega, como problemas de pagamento, endereço incorreto, pedido danificado, entre outros.",
+            "operationId": "handleProblem",
+            "security": [
+                {
+                    "BearerAuth": []
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "orderId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Identificador único do pedido",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "example": "ORDER-12345"
+                }
+            ],
+            "requestBody": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/HandleProblemRequest"
+                        },
+                        "examples": {
+                            "payment_problem": {
+                                "summary": "Problema de pagamento",
+                                "value": {
+                                    "reason": "PAYMENT_PROBLEMS",
+                                    "action": "RETURN_TO_STORE",
+                                    "message": "Cliente não possui o valor exato para pagamento"
+                                }
+                            },
+                            "address_unknown": {
+                                "summary": "Endereço desconhecido",
+                                "value": {
+                                    "reason": "CUSTOMER_ADDRESS_UNKNOWN",
+                                    "action": "RETURN_TO_STORE",
+                                    "message": "Endereço fornecido não foi encontrado"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": "Problema reportado com sucesso",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SuccessResponse"
+                            },
+                            "examples": {
+                                "success": {
+                                    "summary": "Problema reportado",
+                                    "value": {
+                                        "title": "Evento recebido com sucesso, porém não foi implementado.",
+                                        "status": 200
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Erro na requisição",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "error": {
+                                    "summary": "Erro inesperado",
+                                    "value": {
+                                        "title": "Erro inesperado.",
+                                        "status": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Não autorizado - Token inválido ou ausente",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

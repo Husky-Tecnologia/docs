@@ -1,0 +1,2167 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API Módulo Logístico",
+    "description": "API para integração com o módulo logístico do OpenDelivery.\n\nEsta API utiliza autenticação OAuth 2.0 com o fluxo Client Credentials para obter tokens de acesso.\nTodos os endpoints protegidos requerem o token de acesso no header Authorization.\n",
+    "version": "1.2.0",
+    "contact": {
+      "name": "Suporte OpenDelivery"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://opendelivery.gohusky.net/logistic",
+      "description": "Servidor de produção"
+    },
+    {
+      "url": "https://sandbox.opendelivery.gohusky.net/logistic",
+      "description": "Servidor Homologação"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Autenticação",
+      "description": "Endpoints relacionados à autenticação e obtenção de tokens de acesso"
+    },
+    {
+      "name": "Entregas",
+      "description": "Endpoints relacionados à gestão de entregas e pedidos logísticos"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token de acesso OAuth 2.0 obtido através do endpoint `/oauth/token`.\n\nUse o formato: `Authorization: Bearer {access_token}`\n\nO token deve ser incluído em todas as requisições aos endpoints protegidos.\n"
+      }
+    },
+    "schemas": {
+      "AccessTokenResponse": {
+        "type": "object",
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_in"
+        ],
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "Token de acesso OAuth 2.0 que deve ser usado para autenticar requisições subsequentes",
+            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoi..."
+          },
+          "token_type": {
+            "type": "string",
+            "description": "Tipo do token, sempre \"Bearer\"",
+            "enum": [
+              "Bearer"
+            ],
+            "example": "Bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "description": "Tempo de expiração do token em segundos (7 dias = 604800 segundos)",
+            "example": 604800
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "title",
+          "status"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Mensagem de erro descritiva",
+            "example": "Não autorizado"
+          },
+          "status": {
+            "type": "integer",
+            "description": "Código de status HTTP",
+            "example": 401
+          }
+        }
+      },
+      "NewDeliveryRequest": {
+        "type": "object",
+        "required": [
+          "orderId",
+          "orderDisplayId",
+          "merchant",
+          "pickupAddress",
+          "returnToMerchant",
+          "canCombine",
+          "deliveryAddress",
+          "customerName",
+          "vehicle",
+          "totalOrderPrice",
+          "totalWeight",
+          "payments"
+        ],
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "Identificador único do pedido no sistema do cliente",
+            "example": "ORDER-12345"
+          },
+          "orderDisplayId": {
+            "type": "string",
+            "description": "Identificador de exibição do pedido",
+            "example": "ORD-12345"
+          },
+          "merchant": {
+            "$ref": "#/components/schemas/MerchantData"
+          },
+          "pickupAddress": {
+            "$ref": "#/components/schemas/AddressData"
+          },
+          "notifyPickup": {
+            "type": "boolean",
+            "description": "Se deve notificar quando a coleta for iniciada",
+            "example": true
+          },
+          "notifyConclusion": {
+            "type": "boolean",
+            "description": "Se deve notificar quando a entrega for concluída",
+            "example": true
+          },
+          "returnToMerchant": {
+            "type": "boolean",
+            "description": "Se a entrega deve retornar ao merchant em caso de falha",
+            "example": false
+          },
+          "canCombine": {
+            "type": "boolean",
+            "description": "Se a entrega pode ser combinada com outras",
+            "example": false
+          },
+          "deliveryAddress": {
+            "$ref": "#/components/schemas/AddressData"
+          },
+          "customerName": {
+            "type": "string",
+            "description": "Nome do cliente",
+            "example": "João Silva"
+          },
+          "customerPhone": {
+            "type": "string",
+            "description": "Telefone do cliente (formato internacional recomendado)",
+            "example": "+5511999999999"
+          },
+          "vehicle": {
+            "$ref": "#/components/schemas/VehicleData"
+          },
+          "limitTimes": {
+            "$ref": "#/components/schemas/LimitTimesData"
+          },
+          "totalOrderPrice": {
+            "$ref": "#/components/schemas/PriceData"
+          },
+          "orderDeliveryFee": {
+            "$ref": "#/components/schemas/PriceData"
+          },
+          "totalWeight": {
+            "type": "integer",
+            "description": "Peso total do pedido em gramas",
+            "minimum": 0,
+            "example": 500
+          },
+          "packageVolume": {
+            "type": "integer",
+            "description": "Volume do pacote em centímetros cúbicos",
+            "minimum": 0,
+            "example": 2000
+          },
+          "packageQuantity": {
+            "type": "integer",
+            "description": "Quantidade de pacotes",
+            "minimum": 1,
+            "example": 1
+          },
+          "specialInstructions": {
+            "type": "string",
+            "description": "Instruções especiais para a entrega",
+            "example": "Produto frágil"
+          },
+          "additionalPricePercentual": {
+            "type": "number",
+            "format": "float",
+            "description": "Percentual adicional no preço (0-100)",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 10.5
+          },
+          "payments": {
+            "$ref": "#/components/schemas/PaymentsData"
+          },
+          "combinedOrdersIds": {
+            "type": "array",
+            "description": "IDs de pedidos combinados",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "ORDER-123",
+              "ORDER-124"
+            ]
+          },
+          "sourceAppId": {
+            "type": "string",
+            "description": "ID da aplicação de origem",
+            "example": "APP-001"
+          },
+          "sourceOrderId": {
+            "type": "string",
+            "description": "ID do pedido no sistema de origem",
+            "example": "SRC-12345"
+          },
+          "customerPhoneLocalizer": {
+            "type": "string",
+            "description": "Localizador do telefone do cliente",
+            "example": "whatsapp"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Metadados adicionais em formato JSON",
+            "additionalProperties": true,
+            "example": {
+              "orderSource": "mobile_app",
+              "priority": "high"
+            }
+          }
+        }
+      },
+      "NewDeliveryResponse": {
+        "type": "object",
+        "required": [
+          "deliveryId",
+          "event",
+          "completion"
+        ],
+        "properties": {
+          "deliveryId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identificador único da entrega criada",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "PENDING"
+            ],
+            "description": "Status inicial do evento da entrega",
+            "example": "PENDING"
+          },
+          "completion": {
+            "type": "object",
+            "required": [
+              "estimate",
+              "rejectAfter"
+            ],
+            "properties": {
+              "estimate": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Data e hora estimada para conclusão da entrega (ISO 8601)",
+                "example": "2024-01-15T11:30:00.000Z"
+              },
+              "rejectAfter": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Data e hora após a qual a entrega será rejeitada automaticamente se não for aceita (ISO 8601)",
+                "example": "2024-01-15T12:00:00.000Z"
+              }
+            }
+          }
+        }
+      },
+      "AddressData": {
+        "type": "object",
+        "required": [
+          "country",
+          "state",
+          "city",
+          "district",
+          "street",
+          "number"
+        ],
+        "properties": {
+          "country": {
+            "type": "string",
+            "description": "País",
+            "example": "Brasil"
+          },
+          "state": {
+            "type": "string",
+            "description": "Estado (sigla)",
+            "example": "SP"
+          },
+          "city": {
+            "type": "string",
+            "description": "Cidade",
+            "example": "São Paulo"
+          },
+          "district": {
+            "type": "string",
+            "description": "Bairro",
+            "example": "Centro"
+          },
+          "street": {
+            "type": "string",
+            "description": "Rua",
+            "example": "Rua Exemplo"
+          },
+          "number": {
+            "type": "string",
+            "description": "Número",
+            "example": "123"
+          },
+          "postalCode": {
+            "type": "string",
+            "description": "CEP",
+            "example": "01310-100"
+          },
+          "complement": {
+            "type": "string",
+            "description": "Complemento",
+            "example": "Apto 45"
+          },
+          "reference": {
+            "type": "string",
+            "description": "Ponto de referência",
+            "example": "Próximo ao metrô"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "float",
+            "description": "Latitude do endereço",
+            "example": -23.5505
+          },
+          "longitude": {
+            "type": "number",
+            "format": "float",
+            "description": "Longitude do endereço",
+            "example": -46.6333
+          },
+          "pickupLocation": {
+            "type": "string",
+            "description": "Local de coleta específico",
+            "example": "Balcão"
+          },
+          "parkingSpace": {
+            "type": "boolean",
+            "description": "Se há espaço para estacionamento",
+            "example": true
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Instruções específicas para o endereço",
+            "example": "Entregar na recepção"
+          }
+        }
+      },
+      "MerchantData": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único do merchant",
+            "example": "MERCHANT-001"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do merchant",
+            "example": "Restaurante Exemplo"
+          }
+        }
+      },
+      "VehicleData": {
+        "type": "object",
+        "required": [
+          "type",
+          "container"
+        ],
+        "properties": {
+          "type": {
+            "type": "array",
+            "description": "Tipos de veículo aceitos para a entrega",
+            "items": {
+              "type": "string",
+              "enum": [
+                "MOTORBIKE_BAG",
+                "MOTORBIKE_BOX",
+                "CAR",
+                "BICYCLE",
+                "SCOOTER",
+                "VUC"
+              ]
+            },
+            "minItems": 1,
+            "example": [
+              "MOTORBIKE_BAG"
+            ]
+          },
+          "container": {
+            "type": "string",
+            "enum": [
+              "NORMAL",
+              "THERMIC"
+            ],
+            "description": "Tipo de container necessário",
+            "example": "NORMAL"
+          },
+          "containerSize": {
+            "type": "string",
+            "enum": [
+              "SMALL",
+              "MEDIUM",
+              "LARGE",
+              "EXTRA_LARGE"
+            ],
+            "description": "Tamanho do container (opcional, apenas para container térmico)",
+            "example": "MEDIUM"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Instruções específicas sobre o veículo/container",
+            "example": "Manter refrigerado"
+          }
+        }
+      },
+      "PriceData": {
+        "type": "object",
+        "required": [
+          "value",
+          "currency"
+        ],
+        "properties": {
+          "value": {
+            "type": "number",
+            "format": "float",
+            "description": "Valor monetário",
+            "minimum": 0,
+            "example": 45.5
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "BRL",
+              "USD",
+              "EUR"
+            ],
+            "description": "Moeda",
+            "example": "BRL"
+          }
+        }
+      },
+      "LimitTimesData": {
+        "type": "object",
+        "properties": {
+          "pickupLimit": {
+            "type": "integer",
+            "description": "Tempo limite para coleta em minutos",
+            "minimum": 0,
+            "example": 30
+          },
+          "deliveryLimit": {
+            "type": "integer",
+            "description": "Tempo limite para entrega em minutos",
+            "minimum": 0,
+            "example": 60
+          },
+          "orderCreatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data e hora de criação do pedido (ISO 8601)",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        }
+      },
+      "PaymentsData": {
+        "type": "object",
+        "required": [
+          "method"
+        ],
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": [
+              "ONLINE",
+              "OFFLINE"
+            ],
+            "description": "Método de pagamento",
+            "example": "ONLINE"
+          },
+          "wirelessPos": {
+            "type": "boolean",
+            "description": "Se deve usar máquina de cartão sem fio",
+            "example": false
+          },
+          "offlineMethod": {
+            "type": "array",
+            "description": "Métodos de pagamento offline (obrigatório quando method é OFFLINE)",
+            "items": {
+              "$ref": "#/components/schemas/PaymentOfflineMethodData"
+            },
+            "example": [
+              {
+                "type": "CREDIT",
+                "amount": {
+                  "value": 100,
+                  "currency": "BRL"
+                }
+              }
+            ]
+          },
+          "change": {
+            "$ref": "#/components/schemas/PriceData",
+            "description": "Valor de troco necessário"
+          }
+        }
+      },
+      "PaymentOfflineMethodData": {
+        "type": "object",
+        "required": [
+          "type",
+          "amount"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "CREDIT",
+              "DEBIT",
+              "MEAL_VOUCHER",
+              "FOOD_VOUCHER",
+              "PIX",
+              "CASH",
+              "CREDIT_DEBIT",
+              "OTHER"
+            ],
+            "description": "Tipo de método de pagamento offline",
+            "example": "CREDIT"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/PriceData"
+          }
+        }
+      },
+      "CheckAvailabilityRequest": {
+        "type": "object",
+        "required": [
+          "pickupAddress",
+          "returnToMerchant",
+          "canCombine",
+          "deliveryAddress",
+          "vehicle",
+          "limitTimes",
+          "totalOrderPrice",
+          "totalWeight"
+        ],
+        "properties": {
+          "merchant": {
+            "$ref": "#/components/schemas/MerchantData"
+          },
+          "pickupAddress": {
+            "$ref": "#/components/schemas/AddressData"
+          },
+          "returnToMerchant": {
+            "type": "boolean",
+            "description": "Se a entrega deve retornar ao merchant em caso de falha",
+            "example": false
+          },
+          "canCombine": {
+            "type": "boolean",
+            "description": "Se a entrega pode ser combinada com outras",
+            "example": false
+          },
+          "deliveryAddress": {
+            "$ref": "#/components/schemas/AddressData"
+          },
+          "vehicle": {
+            "$ref": "#/components/schemas/VehicleData"
+          },
+          "limitTimes": {
+            "$ref": "#/components/schemas/LimitTimesData"
+          },
+          "totalOrderPrice": {
+            "$ref": "#/components/schemas/PriceData"
+          },
+          "orderDeliveryFee": {
+            "$ref": "#/components/schemas/PriceData"
+          },
+          "totalWeight": {
+            "type": "integer",
+            "description": "Peso total do pedido em gramas",
+            "minimum": 0,
+            "example": 500
+          },
+          "packageVolume": {
+            "type": "integer",
+            "description": "Volume do pacote em centímetros cúbicos",
+            "minimum": 0,
+            "example": 2000
+          },
+          "packageQuantity": {
+            "type": "integer",
+            "description": "Quantidade de pacotes",
+            "minimum": 1,
+            "example": 1
+          },
+          "specialInstructions": {
+            "type": "string",
+            "description": "Instruções especiais para a entrega",
+            "example": "Produto frágil"
+          },
+          "additionalPricePercentual": {
+            "type": "number",
+            "format": "float",
+            "description": "Percentual adicional no preço (0-100)",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 10.5
+          },
+          "onlinePayment": {
+            "type": "boolean",
+            "description": "Se o pagamento é online",
+            "example": true
+          }
+        }
+      },
+      "CheckAvailabilityResponse": {
+        "type": "object",
+        "required": [
+          "deliveryPrice",
+          "vehicles"
+        ],
+        "properties": {
+          "deliveryPrice": {
+            "$ref": "#/components/schemas/PriceData"
+          },
+          "vehicles": {
+            "type": "object",
+            "required": [
+              "availableVehicles",
+              "vehiclesAvailable"
+            ],
+            "properties": {
+              "availableVehicles": {
+                "type": "integer",
+                "description": "Quantidade total de veículos disponíveis",
+                "minimum": 0,
+                "example": 15
+              },
+              "vehiclesAvailable": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "container"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "array",
+                    "description": "Tipos de veículos disponíveis",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "MOTORBIKE_BAG",
+                        "MOTORBIKE_BOX",
+                        "CAR",
+                        "BICYCLE",
+                        "SCOOTER",
+                        "VUC"
+                      ]
+                    },
+                    "example": [
+                      "MOTORBIKE_BAG",
+                      "CAR"
+                    ]
+                  },
+                  "container": {
+                    "type": "string",
+                    "enum": [
+                      "NORMAL",
+                      "THERMIC"
+                    ],
+                    "description": "Tipo de container disponível",
+                    "example": "NORMAL"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "required": [
+          "title",
+          "status"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Mensagem de sucesso",
+            "example": "Evento recebido com sucesso"
+          },
+          "status": {
+            "type": "integer",
+            "description": "Código de status HTTP",
+            "example": 200
+          }
+        }
+      },
+      "HandleProblemRequest": {
+        "type": "object",
+        "required": [
+          "reason",
+          "action"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "DELIVERYPERSON_OCCURRENCE",
+              "PAYMENT_PROBLEMS",
+              "WRONG_PRODUCT_OR_ITEM",
+              "ORDER_DELAYED",
+              "ORDER_DAMAGED_OR_VIOLATED",
+              "CUSTOMER_DID_NOT_PLACE_ORDER",
+              "CUSTOMER_ADDRESS_UNKNOWN",
+              "ORDER_MISSING_ITEMS",
+              "NOBODY_TO_RECEIVE",
+              "DELIVERYPERSON_WAITING_PAYMENT_FOR_ALREADY_PAID_ORDER",
+              "ORDER_DELIVERED_WITHOUT_PAYMENT",
+              "FRAUD_OR_THEFT",
+              "OTHER"
+            ],
+            "description": "Motivo do problema",
+            "example": "PAYMENT_PROBLEMS"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "RETURN_TO_STORE",
+              "DELIVER_PRODUCT",
+              "CANCEL_DELIVERY"
+            ],
+            "description": "Ação tomada para resolver o problema",
+            "example": "RETURN_TO_STORE"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem adicional sobre o problema",
+            "example": "Cliente não possui o valor exato para pagamento"
+          }
+        }
+      },
+      "CancelDeliveryRequest": {
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "CONSUMER_CANCELLATION_REQUESTED",
+              "NO_SHOW",
+              "PROBLEM_AT_MERCHANT",
+              "HIGH_ACCEPTANCE_TIME",
+              "INCORRECT_ORDER_OR_PRODUCT_PICKUP",
+              "PROBLEM_RESOLUTION",
+              "DISCOMBINE_ORDER",
+              "OTHER"
+            ],
+            "description": "Motivo do cancelamento",
+            "example": "CONSUMER_CANCELLATION_REQUESTED"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "RETURN_TO_STORE",
+              "CANCEL_DELIVERY"
+            ],
+            "description": "Ação a ser tomada após o cancelamento",
+            "example": "CANCEL_DELIVERY"
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem adicional sobre o cancelamento",
+            "example": "Cliente solicitou cancelamento"
+          }
+        }
+      },
+      "CancelDeliveryResponse": {
+        "type": "object",
+        "required": [
+          "additionalCharges"
+        ],
+        "properties": {
+          "additionalCharges": {
+            "type": "boolean",
+            "description": "Se há cobranças adicionais associadas ao cancelamento",
+            "example": false
+          }
+        }
+      },
+      "DeliveryDetailsResponse": {
+        "type": "object",
+        "properties": {
+          "deliveryId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identificador único da entrega",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Identificador único do pedido",
+            "example": "ORDER-12345"
+          },
+          "orderDisplayId": {
+            "type": "string",
+            "description": "Identificador de exibição do pedido",
+            "example": "ORD-12345"
+          },
+          "merchant": {
+            "$ref": "#/components/schemas/MerchantData"
+          },
+          "customerName": {
+            "type": "string",
+            "description": "Nome do cliente",
+            "example": "João Silva"
+          },
+          "events": {
+            "type": "array",
+            "description": "Lista de eventos da entrega",
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "datetime"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "PENDING",
+                    "ACCEPTED",
+                    "REJECTED",
+                    "PICKUP_ONGOING",
+                    "ARRIVED_AT_MERCHANT",
+                    "ORDER_PICKED",
+                    "DELIVERY_ONGOING",
+                    "ARRIVED_AT_CUSTOMER",
+                    "ORDER_DELIVERED",
+                    "RETURNING_TO_MERCHANT",
+                    "RETURNED_TO_MERCHANT",
+                    "DELIVERY_FINISHED",
+                    "CANCELLED"
+                  ],
+                  "description": "Tipo do evento",
+                  "example": "ACCEPTED"
+                },
+                "datetime": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Data e hora do evento (ISO 8601)",
+                  "example": "2024-01-15T10:35:00.000Z"
+                }
+              }
+            }
+          },
+          "problem": {
+            "type": "array",
+            "description": "Lista de problemas reportados",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Tipo do problema",
+                  "example": "PAYMENT_PROBLEMS"
+                },
+                "datetime": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Data e hora do problema (ISO 8601)",
+                  "example": "2024-01-15T11:00:00.000Z"
+                },
+                "resolved": {
+                  "type": "boolean",
+                  "description": "Se o problema foi resolvido",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Mensagem sobre o problema",
+                  "example": "Cliente não possui o valor exato"
+                }
+              }
+            }
+          },
+          "vehicle": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "array",
+                "description": "Tipos de veículo",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "MOTORBIKE_BAG",
+                    "MOTORBIKE_BOX",
+                    "CAR",
+                    "BICYCLE",
+                    "SCOOTER",
+                    "VUC"
+                  ]
+                }
+              },
+              "container": {
+                "type": "string",
+                "enum": [
+                  "NORMAL",
+                  "THERMIC"
+                ],
+                "description": "Tipo de container"
+              }
+            }
+          },
+          "deliveryPrice": {
+            "$ref": "#/components/schemas/PriceData"
+          },
+          "times": {
+            "type": "object",
+            "properties": {
+              "deliveryEtaDate": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Data e hora estimada para entrega (ISO 8601)",
+                "example": "2024-01-15T11:30:00.000Z"
+              },
+              "maxDeliveryTime": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Data e hora máxima para entrega (ISO 8601)",
+                "example": "2024-01-15T12:00:00.000Z"
+              },
+              "isDeliveryFinished": {
+                "type": "boolean",
+                "description": "Se a entrega foi finalizada",
+                "example": false
+              },
+              "deliveryFinishDate": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Data e hora de finalização da entrega (ISO 8601, apenas se isDeliveryFinished for true)",
+                "example": "2024-01-15T11:45:00.000Z"
+              }
+            }
+          },
+          "deliveryPerson": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Identificador do entregador",
+                "example": "DELIVERY-001"
+              },
+              "name": {
+                "type": "string",
+                "description": "Nome do entregador",
+                "example": "Entregador Exemplo"
+              }
+            }
+          },
+          "combinedOrdersIds": {
+            "type": "array",
+            "description": "IDs de pedidos combinados",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "ORDER-123",
+              "ORDER-124"
+            ]
+          },
+          "externalTrackingURL": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL externa para rastreamento",
+            "example": "https://tracking.example.com/ORDER-12345"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/oauth/token": {
+      "post": {
+        "tags": [
+          "Autenticação"
+        ],
+        "summary": "Obter token de acesso",
+        "description": "Obtém um token de acesso OAuth 2.0 usando o fluxo Client Credentials.\n\n**Como autenticar:**\n\n1. Você precisa ter credenciais de cliente (client_id e client_secret) válidas\n2. Faça uma requisição POST para este endpoint enviando os parâmetros como `application/x-www-form-urlencoded`\n3. O token retornado deve ser usado no header `Authorization: Bearer {token}` em todas as requisições subsequentes\n4. O token tem validade de 7 dias (604800 segundos)\n5. Quando o token expirar, você precisará obter um novo token usando este mesmo endpoint\n\n**Exemplo de uso:**\n```bash\ncurl -X POST https://opendelivery.gohusky.net/logistic/oauth/token \\\n  -H \"Content-Type: application/x-www-form-urlencoded\" \\\n  -H \"Accept: application/json\" \\\n  -d \"grant_type=client_credentials&client_id=seu-client-id&client_secret=seu-client-secret\"\n```\n",
+        "operationId": "getAccessToken",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "grant_type",
+                  "client_id",
+                  "client_secret"
+                ],
+                "properties": {
+                  "grant_type": {
+                    "type": "string",
+                    "enum": [
+                      "client_credentials"
+                    ],
+                    "description": "Tipo de concessão OAuth. Deve ser sempre \"client_credentials\"",
+                    "example": "client_credentials"
+                  },
+                  "client_id": {
+                    "type": "string",
+                    "description": "Identificador único do cliente",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                  },
+                  "client_secret": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Segredo do cliente",
+                    "example": "sua-chave-secreta-aqui"
+                  }
+                }
+              },
+              "encoding": {
+                "client_id": {
+                  "style": "form"
+                },
+                "client_secret": {
+                  "style": "form"
+                },
+                "grant_type": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token de acesso obtido com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessTokenResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Resposta de sucesso",
+                    "value": {
+                      "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...",
+                      "token_type": "Bearer",
+                      "expires_in": 604800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas ou não autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "invalid_credentials": {
+                    "summary": "Credenciais inválidas",
+                    "value": {
+                      "title": "Não autorizado",
+                      "status": 401
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "server_error": {
+                    "summary": "Erro do servidor",
+                    "value": {
+                      "title": "Serviço indisponível",
+                      "status": 500
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logistics/availability": {
+      "post": {
+        "tags": [
+          "Entregas"
+        ],
+        "summary": "Verificar disponibilidade e preços de entrega",
+        "description": "Verifica a disponibilidade de veículos e calcula os preços de entrega para uma rota específica.\n\nEste endpoint permite verificar se há veículos disponíveis para realizar uma entrega e obter informações sobre os preços antes de criar uma nova solicitação de entrega.\n\n**Informações retornadas:**\n- Preço de entrega calculado\n- Veículos disponíveis e seus tipos\n- Quantidade total de veículos disponíveis",
+        "operationId": "checkDeliveryAvailability",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckAvailabilityRequest"
+              },
+              "examples": {
+                "basic_check": {
+                  "summary": "Verificação básica",
+                  "value": {
+                    "merchant": {
+                      "id": "MERCHANT-001",
+                      "name": "Restaurante Exemplo"
+                    },
+                    "pickupAddress": {
+                      "country": "Brasil",
+                      "state": "SP",
+                      "city": "São Paulo",
+                      "district": "Centro",
+                      "street": "Rua Exemplo",
+                      "number": "123",
+                      "postalCode": "01310-100",
+                      "latitude": -23.5505,
+                      "longitude": -46.6333
+                    },
+                    "returnToMerchant": false,
+                    "canCombine": false,
+                    "deliveryAddress": {
+                      "country": "Brasil",
+                      "state": "SP",
+                      "city": "São Paulo",
+                      "district": "Pinheiros",
+                      "street": "Av. Exemplo",
+                      "number": "456",
+                      "postalCode": "05433-000",
+                      "latitude": -23.5675,
+                      "longitude": -46.6925
+                    },
+                    "vehicle": {
+                      "type": [
+                        "MOTORBIKE_BAG"
+                      ],
+                      "container": "NORMAL",
+                      "containerSize": null,
+                      "instruction": null
+                    },
+                    "limitTimes": {
+                      "pickupLimit": 30,
+                      "deliveryLimit": 60,
+                      "orderCreatedAt": "2024-01-15T10:30:00.000Z"
+                    },
+                    "totalOrderPrice": {
+                      "value": 45.5,
+                      "currency": "BRL"
+                    },
+                    "orderDeliveryFee": {
+                      "value": 8.5,
+                      "currency": "BRL"
+                    },
+                    "totalWeight": 500,
+                    "packageVolume": 2000,
+                    "packageQuantity": 1,
+                    "specialInstructions": null,
+                    "additionalPricePercentual": null,
+                    "onlinePayment": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Disponibilidade e preços calculados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckAvailabilityResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Resposta de sucesso",
+                    "value": {
+                      "deliveryPrice": {
+                        "value": 8.5,
+                        "currency": "BRL"
+                      },
+                      "vehicles": {
+                        "availableVehicles": 15,
+                        "vehiclesAvailable": {
+                          "type": [
+                            "MOTORBIKE_BAG",
+                            "CAR"
+                          ],
+                          "container": "NORMAL"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "error": {
+                    "summary": "Erro inesperado",
+                    "value": {
+                      "title": "Erro inesperado.",
+                      "status": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token inválido ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logistics/delivery/{orderId}": {
+      "get": {
+        "tags": [
+          "Entregas"
+        ],
+        "summary": "Obter detalhes da entrega",
+        "description": "Retorna informações detalhadas sobre uma entrega específica.\n\nEste endpoint retorna todas as informações relacionadas a uma entrega, incluindo:\n- Dados do pedido e merchant\n- Status e eventos da entrega\n- Informações do veículo e entregador\n- Preços e tempos\n- Problemas reportados (se houver)",
+        "operationId": "getDeliveryDetails",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Identificador único do pedido",
+            "schema": {
+              "type": "string"
+            },
+            "example": "ORDER-12345"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes da entrega retornados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeliveryDetailsResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Detalhes da entrega",
+                    "value": {
+                      "deliveryId": "123e4567-e89b-12d3-a456-426614174000",
+                      "orderId": "ORDER-12345",
+                      "orderDisplayId": "ORD-12345",
+                      "merchant": {
+                        "id": "MERCHANT-001",
+                        "name": "Restaurante Exemplo"
+                      },
+                      "customerName": "João Silva",
+                      "events": [
+                        {
+                          "type": "PENDING",
+                          "datetime": "2024-01-15T10:30:00.000Z"
+                        },
+                        {
+                          "type": "ACCEPTED",
+                          "datetime": "2024-01-15T10:35:00.000Z"
+                        }
+                      ],
+                      "vehicle": {
+                        "type": [
+                          "MOTORBIKE_BAG"
+                        ],
+                        "container": "NORMAL"
+                      },
+                      "deliveryPrice": {
+                        "value": 8.5,
+                        "currency": "BRL"
+                      },
+                      "times": {
+                        "deliveryEtaDate": "2024-01-15T11:30:00.000Z",
+                        "maxDeliveryTime": "2024-01-15T12:00:00.000Z",
+                        "isDeliveryFinished": false
+                      },
+                      "deliveryPerson": {
+                        "id": "DELIVERY-001",
+                        "name": "Entregador Exemplo"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "error": {
+                    "summary": "Erro inesperado",
+                    "value": {
+                      "title": "Erro inesperado.",
+                      "status": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token inválido ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pedido não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "not_found": {
+                    "summary": "Pedido não encontrado",
+                    "value": {
+                      "title": "Pedido não encontrado.",
+                      "status": 404
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logistics/cancel/{orderId}": {
+      "post": {
+        "tags": [
+          "Entregas"
+        ],
+        "summary": "Cancelar entrega",
+        "description": "Cancela uma entrega existente.\n\nEste endpoint permite cancelar uma entrega que já foi criada. O sistema retorna se há cobranças adicionais associadas ao cancelamento.",
+        "operationId": "cancelDelivery",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Identificador único do pedido",
+            "schema": {
+              "type": "string"
+            },
+            "example": "ORDER-12345"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelDeliveryRequest"
+              },
+              "examples": {
+                "consumer_cancellation": {
+                  "summary": "Cancelamento pelo consumidor",
+                  "value": {
+                    "reason": "CONSUMER_CANCELLATION_REQUESTED",
+                    "action": "CANCEL_DELIVERY",
+                    "message": "Cliente solicitou cancelamento"
+                  }
+                },
+                "no_show": {
+                  "summary": "Cliente não compareceu",
+                  "value": {
+                    "reason": "NO_SHOW",
+                    "action": "RETURN_TO_STORE",
+                    "message": "Cliente não estava no endereço"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Cancelamento aceito para processamento",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelDeliveryResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Cancelamento aceito",
+                    "value": {
+                      "additionalCharges": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "error": {
+                    "summary": "Erro inesperado",
+                    "value": {
+                      "title": "Erro inesperado.",
+                      "status": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token inválido ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pedido não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "not_found": {
+                    "summary": "Pedido não encontrado",
+                    "value": {
+                      "title": "Pedido não encontrado.",
+                      "status": 404
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logistics/delivery": {
+      "post": {
+        "tags": [
+          "Entregas"
+        ],
+        "summary": "Solicitar nova entrega",
+        "description": "Cria uma nova solicitação de entrega no sistema logístico.\n\nEste endpoint permite criar uma nova entrega com todas as informações necessárias, incluindo endereços de coleta e entrega, dados do cliente, informações de pagamento e configurações do veículo.\n\n**Importante:**\n- A requisição é processada de forma assíncrona\n- A resposta retorna um `deliveryId` que deve ser usado para rastrear o status da entrega\n- O endpoint retorna status 202 (Accepted) quando a entrega é aceita para processamento\n- É necessário estar autenticado com token OAuth válido",
+        "operationId": "requestNewDelivery",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewDeliveryRequest"
+              },
+              "examples": {
+                "basic_delivery": {
+                  "summary": "Entrega básica",
+                  "value": {
+                    "orderId": "ORDER-12345",
+                    "orderDisplayId": "ORD-12345",
+                    "merchant": {
+                      "id": "MERCHANT-001",
+                      "name": "Restaurante Exemplo"
+                    },
+                    "pickupAddress": {
+                      "country": "Brasil",
+                      "state": "SP",
+                      "city": "São Paulo",
+                      "district": "Centro",
+                      "street": "Rua Exemplo",
+                      "number": "123",
+                      "postalCode": "01310-100",
+                      "complement": "Apto 45",
+                      "reference": "Próximo ao metrô",
+                      "latitude": -23.5505,
+                      "longitude": -46.6333,
+                      "pickupLocation": "Balcão",
+                      "parkingSpace": true,
+                      "instructions": "Entregar na recepção"
+                    },
+                    "notifyPickup": true,
+                    "notifyConclusion": true,
+                    "returnToMerchant": false,
+                    "canCombine": false,
+                    "deliveryAddress": {
+                      "country": "Brasil",
+                      "state": "SP",
+                      "city": "São Paulo",
+                      "district": "Pinheiros",
+                      "street": "Av. Exemplo",
+                      "number": "456",
+                      "postalCode": "05433-000",
+                      "complement": null,
+                      "reference": "Edifício exemplo",
+                      "latitude": -23.5675,
+                      "longitude": -46.6925,
+                      "pickupLocation": null,
+                      "parkingSpace": false,
+                      "instructions": "Entregar no portão"
+                    },
+                    "customerName": "João Silva",
+                    "customerPhone": "+5511999999999",
+                    "vehicle": {
+                      "type": [
+                        "MOTORBIKE_BAG"
+                      ],
+                      "container": "NORMAL",
+                      "containerSize": null,
+                      "instruction": null
+                    },
+                    "limitTimes": {
+                      "pickupLimit": 30,
+                      "deliveryLimit": 60,
+                      "orderCreatedAt": "2024-01-15T10:30:00.000Z"
+                    },
+                    "totalOrderPrice": {
+                      "value": 45.5,
+                      "currency": "BRL"
+                    },
+                    "orderDeliveryFee": {
+                      "value": 8.5,
+                      "currency": "BRL"
+                    },
+                    "totalWeight": 500,
+                    "packageVolume": 2000,
+                    "packageQuantity": 1,
+                    "specialInstructions": "Produto frágil",
+                    "additionalPricePercentual": null,
+                    "payments": {
+                      "method": "ONLINE",
+                      "wirelessPos": false,
+                      "offlineMethod": null,
+                      "change": null
+                    },
+                    "combinedOrdersIds": null,
+                    "sourceAppId": null,
+                    "sourceOrderId": null,
+                    "customerPhoneLocalizer": null,
+                    "metadata": null
+                  }
+                },
+                "offline_payment": {
+                  "summary": "Entrega com pagamento offline",
+                  "value": {
+                    "orderId": "ORDER-12346",
+                    "orderDisplayId": "ORD-12346",
+                    "merchant": {
+                      "id": "MERCHANT-001",
+                      "name": "Restaurante Exemplo"
+                    },
+                    "pickupAddress": {
+                      "country": "Brasil",
+                      "state": "SP",
+                      "city": "São Paulo",
+                      "district": "Centro",
+                      "street": "Rua Exemplo",
+                      "number": "123",
+                      "postalCode": "01310-100",
+                      "latitude": -23.5505,
+                      "longitude": -46.6333
+                    },
+                    "notifyPickup": true,
+                    "notifyConclusion": true,
+                    "returnToMerchant": false,
+                    "canCombine": false,
+                    "deliveryAddress": {
+                      "country": "Brasil",
+                      "state": "SP",
+                      "city": "São Paulo",
+                      "district": "Pinheiros",
+                      "street": "Av. Exemplo",
+                      "number": "456",
+                      "postalCode": "05433-000",
+                      "latitude": -23.5675,
+                      "longitude": -46.6925
+                    },
+                    "customerName": "Maria Santos",
+                    "customerPhone": "+5511888888888",
+                    "vehicle": {
+                      "type": [
+                        "CAR"
+                      ],
+                      "container": "THERMIC",
+                      "containerSize": "MEDIUM",
+                      "instruction": "Manter refrigerado"
+                    },
+                    "limitTimes": null,
+                    "totalOrderPrice": {
+                      "value": 120,
+                      "currency": "BRL"
+                    },
+                    "orderDeliveryFee": {
+                      "value": 15,
+                      "currency": "BRL"
+                    },
+                    "totalWeight": 2000,
+                    "packageVolume": 5000,
+                    "packageQuantity": 2,
+                    "specialInstructions": null,
+                    "additionalPricePercentual": null,
+                    "payments": {
+                      "method": "OFFLINE",
+                      "wirelessPos": true,
+                      "offlineMethod": [
+                        {
+                          "type": "CREDIT",
+                          "amount": {
+                            "value": 100,
+                            "currency": "BRL"
+                          }
+                        },
+                        {
+                          "type": "CASH",
+                          "amount": {
+                            "value": 35,
+                            "currency": "BRL"
+                          }
+                        }
+                      ],
+                      "change": {
+                        "value": 15,
+                        "currency": "BRL"
+                      }
+                    },
+                    "combinedOrdersIds": null,
+                    "sourceAppId": "APP-001",
+                    "sourceOrderId": "SRC-12346",
+                    "customerPhoneLocalizer": null,
+                    "metadata": {
+                      "orderSource": "mobile_app",
+                      "priority": "high"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Entrega aceita para processamento",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewDeliveryResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Entrega criada com sucesso",
+                    "value": {
+                      "deliveryId": "123e4567-e89b-12d3-a456-426614174000",
+                      "event": "PENDING",
+                      "completion": {
+                        "estimate": "2024-01-15T11:30:00.000Z",
+                        "rejectAfter": "2024-01-15T12:00:00.000Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "invalid_geocoding": {
+                    "summary": "Erro de geocodificação",
+                    "value": {
+                      "title": "Endereço inválido ou não foi possível geocodificar",
+                      "status": 400
+                    }
+                  },
+                  "no_permission_geocode": {
+                    "summary": "Sem permissão para geocodificar",
+                    "value": {
+                      "title": "O Operador Logistico não tem permissão para geocodificar endereços",
+                      "status": 400
+                    }
+                  },
+                  "unexpected_error": {
+                    "summary": "Erro inesperado",
+                    "value": {
+                      "title": "Erro inesperado",
+                      "status": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token inválido ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Não autorizado",
+                    "value": {
+                      "title": "Não autorizado",
+                      "status": 401
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entidade não processável - Já existe uma entrega com o mesmo orderId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "duplicate_order": {
+                    "summary": "Pedido duplicado",
+                    "value": {
+                      "title": "Já existe um pedido com o mesmo orderId",
+                      "status": 422
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logistics/finishDelivery/{orderId}": {
+      "post": {
+        "tags": [
+          "Entregas"
+        ],
+        "summary": "Finalizar entrega",
+        "description": "Notifica o sistema que uma entrega foi finalizada.\n\n**Nota:** Este endpoint está atualmente em desenvolvimento e não processa o evento, apenas confirma o recebimento.",
+        "operationId": "finishDelivery",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Identificador único do pedido",
+            "schema": {
+              "type": "string"
+            },
+            "example": "ORDER-12345"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evento recebido com sucesso (não implementado)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Evento recebido",
+                    "value": {
+                      "title": "Evento recebido com sucesso, porém não foi implementado.",
+                      "status": 200
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "error": {
+                    "summary": "Erro inesperado",
+                    "value": {
+                      "title": "Erro inesperado.",
+                      "status": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token inválido ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logistics/handleProblem/{orderId}": {
+      "post": {
+        "tags": [
+          "Entregas"
+        ],
+        "summary": "Reportar problema na entrega",
+        "description": "Reporta um problema ocorrido durante a entrega e a ação tomada para resolvê-lo.\n\nEste endpoint permite informar problemas que ocorreram durante o processo de entrega, como problemas de pagamento, endereço incorreto, pedido danificado, entre outros.",
+        "operationId": "handleProblem",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Identificador único do pedido",
+            "schema": {
+              "type": "string"
+            },
+            "example": "ORDER-12345"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandleProblemRequest"
+              },
+              "examples": {
+                "payment_problem": {
+                  "summary": "Problema de pagamento",
+                  "value": {
+                    "reason": "PAYMENT_PROBLEMS",
+                    "action": "RETURN_TO_STORE",
+                    "message": "Cliente não possui o valor exato para pagamento"
+                  }
+                },
+                "address_unknown": {
+                  "summary": "Endereço desconhecido",
+                  "value": {
+                    "reason": "CUSTOMER_ADDRESS_UNKNOWN",
+                    "action": "RETURN_TO_STORE",
+                    "message": "Endereço fornecido não foi encontrado"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Problema reportado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Problema reportado",
+                    "value": {
+                      "title": "Evento recebido com sucesso, porém não foi implementado.",
+                      "status": 200
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "error": {
+                    "summary": "Erro inesperado",
+                    "value": {
+                      "title": "Erro inesperado.",
+                      "status": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token inválido ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logistics/orderPicked/{orderId}": {
+      "post": {
+        "tags": [
+          "Entregas"
+        ],
+        "summary": "Informar que pedido foi coletado",
+        "description": "Notifica o sistema que um pedido foi coletado pelo entregador.\n\n**Nota:** Este endpoint está atualmente em desenvolvimento e não processa o evento, apenas confirma o recebimento.",
+        "operationId": "orderPicked",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Identificador único do pedido",
+            "schema": {
+              "type": "string"
+            },
+            "example": "ORDER-12345"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evento recebido com sucesso (não implementado)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Evento recebido",
+                    "value": {
+                      "title": "Evento recebido com sucesso, porém não foi implementado.",
+                      "status": 200
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "error": {
+                    "summary": "Erro inesperado",
+                    "value": {
+                      "title": "Erro inesperado.",
+                      "status": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token inválido ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logistics/readyForPickup/{orderId}": {
+      "post": {
+        "tags": [
+          "Entregas"
+        ],
+        "summary": "Informar que pedido está pronto para coleta",
+        "description": "Notifica o sistema que um pedido está pronto para ser coletado pelo entregador.\n\nEste endpoint deve ser chamado quando o estabelecimento finaliza o preparo do pedido e ele está pronto para ser coletado.",
+        "operationId": "readyForPickup",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "description": "Identificador único do pedido",
+            "schema": {
+              "type": "string"
+            },
+            "example": "ORDER-12345"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evento recebido com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Evento recebido",
+                    "value": {
+                      "title": "Evento recebido com sucesso",
+                      "status": 200
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "error": {
+                    "summary": "Erro inesperado",
+                    "value": {
+                      "title": "Erro inesperado.",
+                      "status": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token inválido ou ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

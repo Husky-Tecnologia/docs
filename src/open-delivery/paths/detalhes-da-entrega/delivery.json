@@ -1,0 +1,133 @@
+{
+    "path": "/v1/logistics/delivery/{orderId}",
+    "methods": {
+        "get": {
+            "tags": [
+                "Entregas"
+            ],
+            "summary": "Obter detalhes da entrega",
+            "description": "Retorna informações detalhadas sobre uma entrega específica.\n\nEste endpoint retorna todas as informações relacionadas a uma entrega, incluindo:\n- Dados do pedido e merchant\n- Status e eventos da entrega\n- Informações do veículo e entregador\n- Preços e tempos\n- Problemas reportados (se houver)",
+            "operationId": "getDeliveryDetails",
+            "security": [
+                {
+                    "BearerAuth": []
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "orderId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Identificador único do pedido",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "example": "ORDER-12345"
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Detalhes da entrega retornados com sucesso",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeliveryDetailsResponse"
+                            },
+                            "examples": {
+                                "success": {
+                                    "summary": "Detalhes da entrega",
+                                    "value": {
+                                        "deliveryId": "123e4567-e89b-12d3-a456-426614174000",
+                                        "orderId": "ORDER-12345",
+                                        "orderDisplayId": "ORD-12345",
+                                        "merchant": {
+                                            "id": "MERCHANT-001",
+                                            "name": "Restaurante Exemplo"
+                                        },
+                                        "customerName": "João Silva",
+                                        "events": [
+                                            {
+                                                "type": "PENDING",
+                                                "datetime": "2024-01-15T10:30:00.000Z"
+                                            },
+                                            {
+                                                "type": "ACCEPTED",
+                                                "datetime": "2024-01-15T10:35:00.000Z"
+                                            }
+                                        ],
+                                        "vehicle": {
+                                            "type": ["MOTORBIKE_BAG"],
+                                            "container": "NORMAL"
+                                        },
+                                        "deliveryPrice": {
+                                            "value": 8.50,
+                                            "currency": "BRL"
+                                        },
+                                        "times": {
+                                            "deliveryEtaDate": "2024-01-15T11:30:00.000Z",
+                                            "maxDeliveryTime": "2024-01-15T12:00:00.000Z",
+                                            "isDeliveryFinished": false
+                                        },
+                                        "deliveryPerson": {
+                                            "id": "DELIVERY-001",
+                                            "name": "Entregador Exemplo"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Erro na requisição",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "error": {
+                                    "summary": "Erro inesperado",
+                                    "value": {
+                                        "title": "Erro inesperado.",
+                                        "status": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Não autorizado - Token inválido ou ausente",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    }
+                },
+                "404": {
+                    "description": "Pedido não encontrado",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "not_found": {
+                                    "summary": "Pedido não encontrado",
+                                    "value": {
+                                        "title": "Pedido não encontrado.",
+                                        "status": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

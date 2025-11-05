@@ -1,0 +1,81 @@
+{
+    "path": "/v1/logistics/readyForPickup/{orderId}",
+    "methods": {
+        "post": {
+            "tags": [
+                "Entregas"
+            ],
+            "summary": "Informar que pedido está pronto para coleta",
+            "description": "Notifica o sistema que um pedido está pronto para ser coletado pelo entregador.\n\nEste endpoint deve ser chamado quando o estabelecimento finaliza o preparo do pedido e ele está pronto para ser coletado.",
+            "operationId": "readyForPickup",
+            "security": [
+                {
+                    "BearerAuth": []
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "orderId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Identificador único do pedido",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "example": "ORDER-12345"
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Evento recebido com sucesso",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SuccessResponse"
+                            },
+                            "examples": {
+                                "success": {
+                                    "summary": "Evento recebido",
+                                    "value": {
+                                        "title": "Evento recebido com sucesso",
+                                        "status": 200
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Erro na requisição",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "error": {
+                                    "summary": "Erro inesperado",
+                                    "value": {
+                                        "title": "Erro inesperado.",
+                                        "status": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Não autorizado - Token inválido ou ausente",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

@@ -1,0 +1,302 @@
+{
+    "path": "/v1/logistics/delivery",
+    "methods": {
+        "post": {
+            "tags": [
+                "Entregas"
+            ],
+            "summary": "Solicitar nova entrega",
+            "description": "Cria uma nova solicitação de entrega no sistema logístico.\n\nEste endpoint permite criar uma nova entrega com todas as informações necessárias, incluindo endereços de coleta e entrega, dados do cliente, informações de pagamento e configurações do veículo.\n\n**Importante:**\n- A requisição é processada de forma assíncrona\n- A resposta retorna um `deliveryId` que deve ser usado para rastrear o status da entrega\n- O endpoint retorna status 202 (Accepted) quando a entrega é aceita para processamento\n- É necessário estar autenticado com token OAuth válido",
+            "operationId": "requestNewDelivery",
+            "security": [
+                {
+                    "BearerAuth": []
+                }
+            ],
+            "requestBody": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/NewDeliveryRequest"
+                        },
+                        "examples": {
+                            "basic_delivery": {
+                                "summary": "Entrega básica",
+                                "value": {
+                                    "orderId": "ORDER-12345",
+                                    "orderDisplayId": "ORD-12345",
+                                    "merchant": {
+                                        "id": "MERCHANT-001",
+                                        "name": "Restaurante Exemplo"
+                                    },
+                                    "pickupAddress": {
+                                        "country": "Brasil",
+                                        "state": "SP",
+                                        "city": "São Paulo",
+                                        "district": "Centro",
+                                        "street": "Rua Exemplo",
+                                        "number": "123",
+                                        "postalCode": "01310-100",
+                                        "complement": "Apto 45",
+                                        "reference": "Próximo ao metrô",
+                                        "latitude": -23.5505,
+                                        "longitude": -46.6333,
+                                        "pickupLocation": "Balcão",
+                                        "parkingSpace": true,
+                                        "instructions": "Entregar na recepção"
+                                    },
+                                    "notifyPickup": true,
+                                    "notifyConclusion": true,
+                                    "returnToMerchant": false,
+                                    "canCombine": false,
+                                    "deliveryAddress": {
+                                        "country": "Brasil",
+                                        "state": "SP",
+                                        "city": "São Paulo",
+                                        "district": "Pinheiros",
+                                        "street": "Av. Exemplo",
+                                        "number": "456",
+                                        "postalCode": "05433-000",
+                                        "complement": null,
+                                        "reference": "Edifício exemplo",
+                                        "latitude": -23.5675,
+                                        "longitude": -46.6925,
+                                        "pickupLocation": null,
+                                        "parkingSpace": false,
+                                        "instructions": "Entregar no portão"
+                                    },
+                                    "customerName": "João Silva",
+                                    "customerPhone": "+5511999999999",
+                                    "vehicle": {
+                                        "type": ["MOTORBIKE_BAG"],
+                                        "container": "NORMAL",
+                                        "containerSize": null,
+                                        "instruction": null
+                                    },
+                                    "limitTimes": {
+                                        "pickupLimit": 30,
+                                        "deliveryLimit": 60,
+                                        "orderCreatedAt": "2024-01-15T10:30:00.000Z"
+                                    },
+                                    "totalOrderPrice": {
+                                        "value": 45.50,
+                                        "currency": "BRL"
+                                    },
+                                    "orderDeliveryFee": {
+                                        "value": 8.50,
+                                        "currency": "BRL"
+                                    },
+                                    "totalWeight": 500,
+                                    "packageVolume": 2000,
+                                    "packageQuantity": 1,
+                                    "specialInstructions": "Produto frágil",
+                                    "additionalPricePercentual": null,
+                                    "payments": {
+                                        "method": "ONLINE",
+                                        "wirelessPos": false,
+                                        "offlineMethod": null,
+                                        "change": null
+                                    },
+                                    "combinedOrdersIds": null,
+                                    "sourceAppId": null,
+                                    "sourceOrderId": null,
+                                    "customerPhoneLocalizer": null,
+                                    "metadata": null
+                                }
+                            },
+                            "offline_payment": {
+                                "summary": "Entrega com pagamento offline",
+                                "value": {
+                                    "orderId": "ORDER-12346",
+                                    "orderDisplayId": "ORD-12346",
+                                    "merchant": {
+                                        "id": "MERCHANT-001",
+                                        "name": "Restaurante Exemplo"
+                                    },
+                                    "pickupAddress": {
+                                        "country": "Brasil",
+                                        "state": "SP",
+                                        "city": "São Paulo",
+                                        "district": "Centro",
+                                        "street": "Rua Exemplo",
+                                        "number": "123",
+                                        "postalCode": "01310-100",
+                                        "latitude": -23.5505,
+                                        "longitude": -46.6333
+                                    },
+                                    "notifyPickup": true,
+                                    "notifyConclusion": true,
+                                    "returnToMerchant": false,
+                                    "canCombine": false,
+                                    "deliveryAddress": {
+                                        "country": "Brasil",
+                                        "state": "SP",
+                                        "city": "São Paulo",
+                                        "district": "Pinheiros",
+                                        "street": "Av. Exemplo",
+                                        "number": "456",
+                                        "postalCode": "05433-000",
+                                        "latitude": -23.5675,
+                                        "longitude": -46.6925
+                                    },
+                                    "customerName": "Maria Santos",
+                                    "customerPhone": "+5511888888888",
+                                    "vehicle": {
+                                        "type": ["CAR"],
+                                        "container": "THERMIC",
+                                        "containerSize": "MEDIUM",
+                                        "instruction": "Manter refrigerado"
+                                    },
+                                    "limitTimes": null,
+                                    "totalOrderPrice": {
+                                        "value": 120.00,
+                                        "currency": "BRL"
+                                    },
+                                    "orderDeliveryFee": {
+                                        "value": 15.00,
+                                        "currency": "BRL"
+                                    },
+                                    "totalWeight": 2000,
+                                    "packageVolume": 5000,
+                                    "packageQuantity": 2,
+                                    "specialInstructions": null,
+                                    "additionalPricePercentual": null,
+                                    "payments": {
+                                        "method": "OFFLINE",
+                                        "wirelessPos": true,
+                                        "offlineMethod": [
+                                            {
+                                                "type": "CREDIT",
+                                                "amount": {
+                                                    "value": 100.00,
+                                                    "currency": "BRL"
+                                                }
+                                            },
+                                            {
+                                                "type": "CASH",
+                                                "amount": {
+                                                    "value": 35.00,
+                                                    "currency": "BRL"
+                                                }
+                                            }
+                                        ],
+                                        "change": {
+                                            "value": 15.00,
+                                            "currency": "BRL"
+                                        }
+                                    },
+                                    "combinedOrdersIds": null,
+                                    "sourceAppId": "APP-001",
+                                    "sourceOrderId": "SRC-12346",
+                                    "customerPhoneLocalizer": null,
+                                    "metadata": {
+                                        "orderSource": "mobile_app",
+                                        "priority": "high"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "202": {
+                    "description": "Entrega aceita para processamento",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/NewDeliveryResponse"
+                            },
+                            "examples": {
+                                "success": {
+                                    "summary": "Entrega criada com sucesso",
+                                    "value": {
+                                        "deliveryId": "123e4567-e89b-12d3-a456-426614174000",
+                                        "event": "PENDING",
+                                        "completion": {
+                                            "estimate": "2024-01-15T11:30:00.000Z",
+                                            "rejectAfter": "2024-01-15T12:00:00.000Z"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Requisição inválida",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "invalid_geocoding": {
+                                    "summary": "Erro de geocodificação",
+                                    "value": {
+                                        "title": "Endereço inválido ou não foi possível geocodificar",
+                                        "status": 400
+                                    }
+                                },
+                                "no_permission_geocode": {
+                                    "summary": "Sem permissão para geocodificar",
+                                    "value": {
+                                        "title": "O Operador Logistico não tem permissão para geocodificar endereços",
+                                        "status": 400
+                                    }
+                                },
+                                "unexpected_error": {
+                                    "summary": "Erro inesperado",
+                                    "value": {
+                                        "title": "Erro inesperado",
+                                        "status": 400
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "401": {
+                    "description": "Não autorizado - Token inválido ou ausente",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "unauthorized": {
+                                    "summary": "Não autorizado",
+                                    "value": {
+                                        "title": "Não autorizado",
+                                        "status": 401
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "422": {
+                    "description": "Entidade não processável - Já existe uma entrega com o mesmo orderId",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            },
+                            "examples": {
+                                "duplicate_order": {
+                                    "summary": "Pedido duplicado",
+                                    "value": {
+                                        "title": "Já existe um pedido com o mesmo orderId",
+                                        "status": 422
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
