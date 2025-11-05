@@ -68,6 +68,23 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "API - Open Delivery",
+        "groups": [
+          {
+            "group": "Autenticação",
+            "pages": [
+              "open-delivery/oauth/token"
+            ]
+          },
+          {
+            "group": "Logistica",
+            "pages": [
+              "open-delivery/logistic/delivery"
+            ]
+          }
+        ]
       }
     ]
   },
