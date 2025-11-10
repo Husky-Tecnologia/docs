@@ -1,0 +1,227 @@
+---
+title: "Início rápido"
+description: "Comece a integrar com a Husky em minutos através da API Open Delivery"
+---
+
+## Sobre a API Open Delivery
+
+A **API Open Delivery** segue o padrão Open Delivery, um protocolo aberto para integração entre aplicativos de pedidos e serviços logísticos.
+
+Esta API utiliza **autenticação OAuth 2.0** com o fluxo Client Credentials, oferecendo uma integração padronizada e compatível com o ecossistema Open Delivery.
+
+Você pode acessar nossa página oficial no Open Delivery pelo link:
+
+🔗 [Husky no Open Delivery](https://aderentes.opendelivery.com.br/companies/672e2e8457af4e25df0a2866)
+
+## Configuração Inicial
+
+### Passo 1: Escolha o Ambiente
+
+A API está disponível em dois ambientes:
+
+<CardGroup cols={2}>
+<Card title="Sandbox" icon="flask">
+**Base URL:** `https://sandbox.opendelivery.gohusky.net/logistic`
+
+Ambiente de testes e homologação.
+
+Para acessar, entre em contato com o [suporte](mailto:suporte@gohusky.net) informando:
+- Nome do Responsável Técnico
+- E-mail
+- Nome da Empresa
+</Card>
+
+<Card title="Produção" icon="rocket">
+**Base URL:** `https://opendelivery.gohusky.net/logistic`
+
+Ambiente de produção. Use após concluir a homologação.
+</Card>
+</CardGroup>
+
+### Passo 2: Autenticação OAuth 2.0
+
+A API Open Delivery utiliza **OAuth 2.0** com o fluxo **Client Credentials** para autenticação.
+
+<AccordionGroup>
+<Accordion title="Obter Token de Acesso">
+Para obter um token de acesso, faça uma requisição POST para o endpoint [`/oauth/token`](/api-open-delivery/autenticacao/oauth-token):
+
+**Parâmetros necessários:**
+- `grant_type`: `client_credentials`
+- `client_id`: Seu ID de cliente fornecido pela Husky
+- `client_secret`: Seu secret de cliente fornecido pela Husky
+
+**Resposta:**
+```json
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...",
+  "token_type": "Bearer",
+  "expires_in": 604800
+}
+```
+
+O token expira em 7 dias (604800 segundos).
+</Accordion>
+
+<Accordion title="Usar o Token nas Requisições">
+Após obter o token, inclua-o no header `Authorization` de todas as requisições:
+
+```
+Authorization: Bearer {access_token}
+```
+
+Todos os endpoints protegidos requerem este token no header.
+</Accordion>
+</AccordionGroup>
+
+<Warning>
+Mantenha suas credenciais (`client_id` e `client_secret`) seguras. Nunca as exponha em código cliente ou repositórios públicos.
+</Warning>
+
+## Fluxo Operacional da Integração
+
+### Resumo do Processo
+
+<Steps>
+<Step title="Obter Token de Acesso">
+Primeiro, obtenha um token de acesso através do endpoint [`/oauth/token`](/api-open-delivery/autenticacao/oauth-token) usando suas credenciais OAuth.
+
+Este token será necessário para todas as requisições subsequentes.
+</Step>
+
+<Step title="Cotação de Entrega (Opcional)">
+Antes de criar a entrega, você pode consultar a disponibilidade e obter uma cotação através do endpoint [`/v1/logistics/availability`](/api-open-delivery/cotacao-de-entrega/availability).
+
+Este endpoint retorna informações sobre disponibilidade, preço estimado e tempo de entrega.
+</Step>
+
+<Step title="Criar Nova Entrega">
+Crie a entrega através do endpoint [`/v1/logistics/delivery`](/api-open-delivery/entregas/delivery).
+
+Neste momento são informados os dados principais:
+- `orderId`: Identificador único do pedido
+- `merchant`: Dados do estabelecimento
+- `pickupAddress`: Endereço de coleta
+- `deliveryAddress`: Endereço de entrega
+- Informações de pagamento e configurações do veículo
+
+A requisição é processada de forma assíncrona e retorna status **202 (Accepted)** quando a entrega é aceita para processamento.
+
+A resposta inclui um `deliveryId` que deve ser usado para rastrear o status da entrega.
+</Step>
+
+<Step title="Pedido Pronto para Coleta">
+Quando o pedido estiver pronto para ser coletado, informe através do endpoint [`/v1/logistics/delivery/{orderId}/ready-for-pickup`](/api-open-delivery/entregas/ready-for-pickup).
+
+Este endpoint notifica o sistema logístico que o pedido está pronto para ser coletado pelo entregador.
+</Step>
+
+<Step title="Receber Atualizações via Webhook">
+A API Open Delivery envia atualizações de status através de **webhooks**.
+
+Configure seu endpoint para receber eventos de tracking através do webhook [`tracking-event`](/api-open-delivery/webhooks/tracking-event).
+
+Os eventos incluem atualizações de status, localização do entregador e conclusão da entrega.
+</Step>
+
+<Step title="Consultar Detalhes da Entrega">
+A qualquer momento, você pode consultar os detalhes completos de uma entrega através do endpoint [`/v1/logistics/delivery/{orderId}`](/api-open-delivery/detalhes-da-entrega/delivery).
+
+Este endpoint retorna todas as informações relacionadas à entrega, incluindo status, eventos, informações do entregador e problemas reportados (se houver).
+</Step>
+</Steps>
+
+## Endpoints Principais
+
+<CardGroup cols={2}>
+<Card title="Autenticação" icon="key" href="/api-open-delivery/autenticacao/oauth-token">
+Obtenha um token de acesso OAuth 2.0 usando Client Credentials.
+
+Token válido por 7 dias.
+</Card>
+
+<Card title="Cotação de Entrega" icon="calculator" href="/api-open-delivery/cotacao-de-entrega/availability">
+Consulte disponibilidade, preço estimado e tempo de entrega antes de criar o pedido.
+</Card>
+
+<Card title="Criar Entrega" icon="plus" href="/api-open-delivery/entregas/delivery">
+Crie uma nova solicitação de entrega no sistema logístico.
+
+Processamento assíncrono com resposta 202 (Accepted).
+</Card>
+
+<Card title="Detalhes da Entrega" icon="magnifying-glass" href="/api-open-delivery/detalhes-da-entrega/delivery">
+Consulte informações completas sobre uma entrega específica, incluindo status, eventos e entregador.
+</Card>
+
+<Card title="Pedido Pronto" icon="check" href="/api-open-delivery/entregas/ready-for-pickup">
+Informe que o pedido está pronto para ser coletado pelo entregador.
+</Card>
+
+<Card title="Webhooks" icon="bell" href="/api-open-delivery/webhooks/tracking-event">
+Configure seu endpoint para receber eventos de tracking e atualizações de status.
+</Card>
+</CardGroup>
+
+## Ações Adicionais Disponíveis
+
+Além dos endpoints principais, a API Open Delivery oferece ações específicas para gerenciar o ciclo de vida das entregas:
+
+<CardGroup cols={2}>
+<Card title="Pedido Coletado" icon="truck" href="/api-open-delivery/entregas/order-picked">
+Informe quando o entregador coletou o pedido no estabelecimento.
+</Card>
+
+<Card title="Finalizar Entrega" icon="flag-checkered" href="/api-open-delivery/entregas/finish-delivery">
+Finalize a entrega quando o pedido for entregue ao cliente.
+</Card>
+
+<Card title="Tratar Problema" icon="triangle-exclamation" href="/api-open-delivery/entregas/handle-problem">
+Reporte e trate problemas ocorridos durante a entrega.
+</Card>
+
+<Card title="Cancelar Entrega" icon="xmark" href="/api-open-delivery/entregas/cancel">
+Cancele uma entrega que não pode ser realizada.
+</Card>
+</CardGroup>
+
+## Validação de Sucesso
+
+<Warning>
+**Importante:** A requisição de criação de entrega retorna status **202 (Accepted)** quando a entrega é aceita para processamento.
+
+Verifique o `deliveryId` retornado na resposta para confirmar que a entrega foi criada com sucesso. Use este ID para consultar os detalhes e rastrear o status da entrega.
+</Warning>
+
+### Possíveis Retornos
+
+- **HTTP 200** - Requisição bem-sucedida
+- **HTTP 202** - Entrega aceita para processamento (criação de entrega)
+- **HTTP 400** - Erro na validação dos dados enviados
+- **HTTP 401** - Token inválido ou ausente
+- **HTTP 404** - Recurso não encontrado
+
+## Próximos Passos
+
+<CardGroup cols={2}>
+<Card title="Autenticação" icon="key" href="/api-open-delivery/autenticacao/oauth-token">
+Entenda em detalhes como funciona a autenticação OAuth 2.0 na API Open Delivery.
+</Card>
+
+<Card title="Criar Entrega" icon="plus" href="/api-open-delivery/entregas/delivery">
+Aprenda a criar entregas com todos os parâmetros disponíveis.
+</Card>
+
+<Card title="Webhooks" icon="bell" href="/api-open-delivery/webhooks/tracking-event">
+Configure e entenda todos os eventos de webhook disponíveis.
+</Card>
+
+<Card title="API Pública" icon="globe" href="/api-reference/quickstart">
+Se preferir usar nossa API Pública, consulte a documentação específica.
+</Card>
+</CardGroup>
+
+<Tip>
+**Precisa de ajuda?** Entre em contato com nosso suporte em [suporte@gohusky.net](mailto:suporte@gohusky.net) ou consulte a [documentação completa do Open Delivery](https://aderentes.opendelivery.com.br/companies/672e2e8457af4e25df0a2866).
+</Tip>
+

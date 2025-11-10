@@ -35,7 +35,8 @@
             "group": "Introdução",
             "pages": [
               "api-reference/introduction",
-              "api-reference/autenticacao"
+              "api-reference/autenticacao",
+              "api-reference/quickstart"
             ]
           },
           {
@@ -78,6 +79,12 @@
         "tab": "API - Open Delivery",
         "groups": [
           {
+            "group": "Introdução",
+            "pages": [
+              "api-open-delivery/quickstart"
+            ]
+          },
+          {
             "group": "Autenticação",
             "pages": [
               "api-open-delivery/autenticacao/oauth-token"
@@ -93,12 +100,6 @@
             ]
           },
           {
-            "group": "Webhooks",
-            "pages": [
-              "api-open-delivery/webhooks/tracking-event"
-            ]
-          },
-          {
             "group": "Detalhes da entrega",
             "pages": [
               "api-open-delivery/detalhes-da-entrega/delivery"
@@ -108,6 +109,12 @@
             "group": "Cotação de entrega",
             "pages": [
               "api-open-delivery/cotacao-de-entrega/availability"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "api-open-delivery/webhooks/tracking-event"
             ]
           }
         ]

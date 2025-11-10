@@ -1,0 +1,184 @@
+---
+title: "Início rápido"
+description: "Comece a integrar com a Husky em minutos através da API Pública"
+---
+
+## Sobre a API Pública
+
+A **API Pública** foi desenvolvida para oferecer uma integração simples e eficiente entre operações logísticas e sistemas de pedidos.
+
+Por meio dela, é possível gerenciar **usuários, empresas, dispositivos e fluxos de entrega**, permitindo maior automação e controle operacional.
+
+## Configuração Inicial
+
+### Passo 1: Escolha o Ambiente
+
+A API está disponível em dois ambientes:
+
+<CardGroup cols={2}>
+<Card title="Sandbox" icon="flask">
+**Base URL:** `https://sandbox.api.gohusky.net`
+
+Ambiente de testes e homologação. 
+
+Use `live_mode=false` nas requisições.
+
+Para acessar, entre em contato com o [suporte](mailto:suporte@gohusky.net) informando:
+- Nome do Responsável Técnico
+- E-mail
+- Nome da Empresa
+</Card>
+
+<Card title="Produção" icon="rocket">
+**Base URL:** `https://api.gohusky.net`
+
+Ambiente de produção. Use após concluir a homologação.
+
+Use `live_mode=true` nas requisições.
+</Card>
+</CardGroup>
+
+### Passo 2: Entenda a Autenticação
+
+Todas as requisições à API da Husky devem ser autenticadas por meio de um **token**, enviado sempre nos **HTTP Params** (query parameters).
+
+<AccordionGroup>
+<Accordion title="Token de Operação (Operador Logístico)">
+O token representa o **ID público da operação**.
+
+- Use quando quiser gerenciar recursos a nível de operação
+- Passe `customer=false` nos parâmetros
+- Exemplo: gerenciar múltiplas lojas, receber webhooks de todas as lojas
+</Accordion>
+
+<Accordion title="Token de Embarcador (Restaurante, Loja, Farmácia)">
+O token representa o **ID público do Embarcador**.
+
+- Use quando quiser gerenciar recursos de uma loja específica
+- Passe `customer=true` nos parâmetros
+- Exemplo: criar entregas de uma loja específica, receber webhooks apenas dessa loja
+</Accordion>
+
+<Accordion title="Endpoints v2">
+Para endpoints v2 (como `/v2/getOrderStatus`), o token deve ser enviado via **Header** com a chave `Token`.
+
+Não é necessário passar o parâmetro `customer`.
+</Accordion>
+</AccordionGroup>
+
+<Warning>
+Cada endpoint especifica qual tipo de token deve ser utilizado. Verifique a documentação de cada endpoint antes de fazer a requisição.
+</Warning>
+
+## Fluxo Operacional da Integração
+
+### Resumo do Processo
+
+<Steps>
+<Step title="Pedido é criado no aplicativo de pedidos do Parceiro">
+O pedido é criado no sistema do parceiro (aplicativo de pedidos).
+</Step>
+
+<Step title="Criação do Pedido na Husky">
+O pedido é criado através do endpoint [`/createOrderList`](/api-reference/entregas/create-order-list).
+
+Neste momento são informados os dados principais:
+- Identificação do pedido (`orderId`)
+- Dados do cliente (`addresses.dropoff`)
+- Forma de pagamento
+- Demais dados pertinentes à criação do pedido
+
+Nosso sistema:
+- Valida o payload recebido
+- Se `geocoding = true`, realiza geocodificação automática do endereço
+- Se `useSavedAddress = true`, verifica na base de contatos se há endereço já cadastrado para o destinatário
+- Cria o pedido no lado da Husky
+</Step>
+
+<Step title="Pedido Pronto para Logística">
+Para informar que o pedido está pronto, utilize o endpoint [`/orderReady`](/api-reference/entregas/order-ready).
+
+Por padrão, o pedido é criado como "em preparo" do nosso lado, ficando a cargo do sistema parceiro informar que o pedido está pronto para a logística.
+</Step>
+
+<Step title="Recebimento de Atualizações de Status">
+Trabalhamos exclusivamente com **Webhooks**. O sistema parceiro deve cadastrar sua URL através do endpoint [`/notifications`](/api-reference/webhooks/create-notification).
+
+Neste endpoint você configura a URL em que irá receber os webhooks de atualização de status das entregas.
+</Step>
+
+<Step title="Rastreio do Pedido">
+Para montar o link de rastreio do pedido, use o `tracking_code` retornado na criação da entrega:
+
+```
+https://entregas.gohusky.net/tracking?q={TRACKING_CODE}
+```
+
+O `tracking_code` é retornado no momento da criação da entrega através do endpoint `/createOrderList`.
+</Step>
+</Steps>
+
+## Endpoints Principais
+
+<CardGroup cols={2}>
+<Card title="Cotação de Entrega" icon="calculator" href="/api-reference/entregas/check-order-price">
+Calcule o valor e distância da entrega antes de criar o pedido.
+
+**Rate Limit:** 100 requisições por minuto
+</Card>
+
+<Card title="Criar Entrega" icon="plus" href="/api-reference/entregas/create-order-list">
+Crie uma entrega individual ou múltiplas entregas em lote.
+
+Suporta geocodificação automática e uso de endereços salvos.
+</Card>
+
+<Card title="Consultar Status" icon="magnifying-glass" href="/api-reference/entregas/get-order-status">
+Consulte o status de uma ou múltiplas entregas (até 1000 por requisição).
+
+**Rate Limit:** 1 requisição a cada 30 segundos
+</Card>
+
+<Card title="Configurar Webhooks" icon="bell" href="/api-reference/webhooks/create-notification">
+Cadastre URLs para receber notificações de eventos.
+
+Eventos disponíveis: `ORDER_STATUS_UPDATED`, `ORDER_CREATED`, `ORDER_UPDATED`, entre outros.
+</Card>
+</CardGroup>
+
+## Validação de Sucesso
+
+<Warning>
+**Importante:** A melhor forma de validar a criação da entrega é verificar se o `TRACKING_CODE` foi retornado na resposta.
+
+Na resposta, enviamos sempre um campo `success`. Quando este campo vier diferente de `1`, ocorreu um problema com a criação e a requisição deve ser enviada novamente.
+</Warning>
+
+### Possíveis Retornos
+
+- **HTTP 401** - Sempre que um campo obrigatório não for enviado ou o token for inválido
+- **HTTP 200** - Sempre que a solicitação for aceita, porém deve ser levado em conta se o `TRACKING_CODE` foi retornado
+
+## Próximos Passos
+
+<CardGroup cols={2}>
+<Card title="Documentação Completa" icon="book" href="/api-reference/introduction">
+Explore todos os endpoints disponíveis na documentação completa da API Pública.
+</Card>
+
+<Card title="Open Delivery" icon="code" href="/api-open-delivery/autenticacao/oauth-token">
+Se preferir usar o padrão Open Delivery, consulte nossa documentação específica.
+</Card>
+
+<Card title="Autenticação" icon="key" href="/api-reference/autenticacao">
+Entenda em detalhes como funciona a autenticação na API Husky.
+</Card>
+
+<Card title="Webhooks" icon="bell" href="/api-reference/webhooks/webhook">
+Configure e entenda todos os eventos de webhook disponíveis.
+</Card>
+</CardGroup>
+
+<Tip>
+**Precisa de ajuda?** Entre em contato com nosso suporte em [suporte@gohusky.net](mailto:suporte@gohusky.net) ou consulte a [documentação completa](/api-reference/introduction).
+</Tip>
