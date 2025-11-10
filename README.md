@@ -4,6 +4,8 @@ Este repositório concentra a documentação pública da Husky construída com M
 
 ## Estrutura do projeto
 
+**IMPORTANTE:** não atualizar diretamente o arquivo openapi.json, pois é um arquivo autogerado.
+
 - `docs.json`: arquivo principal que define navegação, temas e agrupamento das páginas.
 - `index.mdx`, `quickstart.mdx`, `development.mdx`: páginas base da documentação principal.
 - `api-reference/`: documentação da API pública, incluindo arquivos `.mdx` e o `openapi.json` consumido pelos componentes Mintlify.
@@ -34,7 +36,7 @@ mint dev
 ### Dicas úteis
 
 - Arquivos em `src/**` alimentam os componentes usados nos `.mdx`. Ajustes nesses JSONs refletem nas tabelas, endpoints e exemplos renderizados.
-- Ao adicionar novos endpoints, atualize o `openapi.json` correspondente e verifique se o `build-openapi.js` aponta para os paths corretos.
+- Rode o script `build-openapi.js` para atualizar o arquivo openapi.json.
 - Utilize `mint update` para manter o CLI atualizado caso encontre erros de build ou visualização.
 
 ## Publicação
