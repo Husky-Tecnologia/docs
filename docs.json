@@ -55,7 +55,8 @@
               "api-reference/entregas/get-order-status",
               "api-reference/entregas/order-ready",
               "api-reference/entregas/unfinished-status-reasons",
-              "api-reference/entregas/update-order-status"
+              "api-reference/entregas/update-order-status",
+              "api-reference/entregas/update-order-info"
             ]
           },
           {
