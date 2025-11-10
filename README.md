@@ -1,43 +1,48 @@
-# Mintlify Starter Kit
+# Documentação Husky - Mintlify
 
-Use the starter kit to get your docs deployed and ready to customize.
+Este repositório concentra a documentação pública da Husky construída com Mintlify. Aqui estão organizadas páginas de guia, referências de API e descrições dos componentes OpenAPI utilizados para gerar a experiência interativa na web.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## Estrutura do projeto
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+- `docs.json`: arquivo principal que define navegação, temas e agrupamento das páginas.
+- `index.mdx`, `quickstart.mdx`, `development.mdx`: páginas base da documentação principal.
+- `api-reference/`: documentação da API pública, incluindo arquivos `.mdx` e o `openapi.json` consumido pelos componentes Mintlify.
+- `api-open-delivery/`: documentação específica da integração Open Delivery, com guias, webhooks e o respectivo `openapi.json`.
+- `src/api/` e `src/open-delivery/`: fontes dos componentes e bundlers utilizados para gerar os esquemas OpenAPI e blocos reutilizáveis nas páginas.
+- `images/` e `logo/`: ativos estáticos (imagens e logotipos) referenciados nas páginas.
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+## Pré-requisitos
 
-## Development
-
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+- Node.js 16+ (recomendado 18 ou 20).
+- [Mintlify CLI](https://www.npmjs.com/package/mint) instalado globalmente:
 
 ```
-npm i -g mint
+npm install -g mint
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+## Ambiente de desenvolvimento
+
+1. Instale dependências compartilhadas (se houver) conforme sua stack local.
+2. Na raiz do repositório (`docs.json`), execute:
 
 ```
 mint dev
 ```
 
-View your local preview at `http://localhost:3000`.
+3. Acesse `http://localhost:3000` para visualizar as alterações. O servidor recarrega automaticamente quando arquivos `.mdx`, `.json` ou assets mudam.
 
-## Publishing changes
+### Dicas úteis
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+- Arquivos em `src/**` alimentam os componentes usados nos `.mdx`. Ajustes nesses JSONs refletem nas tabelas, endpoints e exemplos renderizados.
+- Ao adicionar novos endpoints, atualize o `openapi.json` correspondente e verifique se o `build-openapi.js` aponta para os paths corretos.
+- Utilize `mint update` para manter o CLI atualizado caso encontre erros de build ou visualização.
 
-## Need help?
+## Publicação
 
-### Troubleshooting
+A publicação automática está integrada via Mintlify. Faça push das alterações na branch principal para disparar a sincronização com o painel Mintlify. Confirme no [dashboard da Mintlify](https://dashboard.mintlify.com/) se o repositório está conectado ao app do GitHub/Husky.
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+## Referências
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+- [Mintlify Docs](https://mintlify.com/docs)
+- [Guia de componentes Mintlify](https://mintlify.com/docs/components)
+- [Suporte Husky](https://www.husky.io/)

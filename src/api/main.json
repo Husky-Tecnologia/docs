@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "GoHusky API",
+    "title": "API Pública",
     "description": "API da Husky, uma plataforma de logística para delivery e entregas. Aqui você encontra todas as informações necessárias para integrar o sistema Husky em seu aplicativo ou sistema.",
     "version": ""
   },
