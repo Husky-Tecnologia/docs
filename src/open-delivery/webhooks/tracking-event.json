@@ -14,7 +14,7 @@
                         "schema": {
                             "type": "string",
                             "format": "uuid",
-                            "description": "Um identificador único da Husky."
+                            "description": "Identificador único da Husky."
                         }
                     },
                     {
