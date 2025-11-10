@@ -5,6 +5,9 @@ on:
     paths:
       - 'src/open-delivery/**/*.json'
 
+permissions:
+  contents: write
+
 jobs:
   build-openapi:
     runs-on: ubuntu-latest
