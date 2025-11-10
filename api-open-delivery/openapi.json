@@ -2534,7 +2534,7 @@
             "schema": {
               "type": "string",
               "format": "uuid",
-              "description": "Um identificador único do **`Serviço de Logística`**."
+              "description": "Identificador único da Husky."
             }
           },
           {
