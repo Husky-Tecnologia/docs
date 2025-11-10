@@ -7,7 +7,7 @@
     "light": "#0773c9",
     "dark": "#15803D"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.png",
   "navigation": {
     "tabs": [
       {
@@ -17,8 +17,7 @@
             "group": "Comece aqui",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "quickstart"
             ]
           }
         ]
