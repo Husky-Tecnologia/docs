@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'src/open-delivery/**/*.json'
+      - 'src/api/**/*.json'
 
 permissions:
   contents: write
@@ -24,7 +25,7 @@ jobs:
           node-version: '18'
 
       - name: Run build script
-        run: node src/open-delivery/build-openapi.js
+        run: node src/api/build-openapi.js && node src/open-delivery/build-openapi.js
 
       - name: Commit generated files
         run: |
