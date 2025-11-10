@@ -45,4 +45,4 @@ A publicação automática está integrada via Mintlify. Faça push das alteraç
 
 - [Mintlify Docs](https://mintlify.com/docs)
 - [Guia de componentes Mintlify](https://mintlify.com/docs/components)
-- [Suporte Husky](https://www.husky.io/)
+- [Suporte Husky](https://www.gohusky.net/)
