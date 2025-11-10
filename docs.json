@@ -19,6 +19,12 @@
               "index",
               "quickstart"
             ]
+          },
+          {
+            "group": "Otimize sua IA",
+            "pages": [
+              "model-context-protocol"
+            ]
           }
         ]
       },
@@ -122,17 +128,15 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "copy",
+      "view",
+      "vscode",
+      "cursor"
+    ]
   },
-  "footer": {
-
-  }
+  "footer": {}
 }
