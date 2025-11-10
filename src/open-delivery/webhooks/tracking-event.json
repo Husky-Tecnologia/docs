@@ -1,0 +1,59 @@
+{
+    "events": {
+        "/": {
+            "post": {
+                "operationId": "newLogisticEvent",
+                "security": [
+                    {}
+                ],
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "X-App-Id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "UUID",
+                            "description": "Um identificador único do **`Serviço de Logística`**."
+                        }
+                    },
+                    {
+                        "in": "header",
+                        "name": "X-App-MerchantId",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Um identificador único do **`Embarcador`**",
+                            "minLength": 36,
+                            "maxLength": 100,
+                            "example": "22815773000169-dbc7e35a-c936-4665-9e13-eb55eb8b6824"
+                        }
+                    },
+                    {
+                        "in": "header",
+                        "name": "X-App-Signature",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "SHA256",
+                            "description": "Hash SHA256 do corpo da requisição, usando o segredo do cliente como chave"
+                        }
+                    }
+                ],
+                "summary": "Webhook de evento de rastreamento",
+                "description": "Informações sobre um novo evento nos sistemas",
+                "tags": [
+                    "logisticTracking"
+                ],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/DeliveryEvent"
+                },
+                "responses": {
+                    "204": {
+                        "description": "Dados recebidos com sucesso. Nenhum conteúdo de resposta."
+                    }
+                }
+            }
+        }
+    }
+}

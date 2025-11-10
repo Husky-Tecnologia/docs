@@ -14,7 +14,7 @@
         "tab": "Guias",
         "groups": [
           {
-            "group": "Início Rápido",
+            "group": "Comece aqui",
             "pages": [
               "index",
               "quickstart",
@@ -83,10 +83,8 @@
             "pages": [
               "api-open-delivery/entregas/delivery",
               "api-open-delivery/entregas/ready-for-pickup",
-              "api-open-delivery/entregas/order-picked",
-              "api-open-delivery/entregas/finish-delivery",
               "api-open-delivery/entregas/handle-problem",
-              "api-open-delivery/entregas/cancel-delivery"
+              "api-open-delivery/entregas/cancel"
             ]
           },
           {

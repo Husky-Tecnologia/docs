@@ -20,4 +20,19 @@ for (const jsonPath of jsonPaths) {
     bundled.paths[jsonPathObject.path] = jsonPathObject.methods;
 }
 
+const jsonWebhooks = fs.readdirSync(path.join(__dirname, 'webhooks'));
+for (const jsonWebhook of jsonWebhooks) {
+    const jsonWebhookContent = fs.readFileSync(path.join(__dirname, 'webhooks', jsonWebhook), 'utf8');
+    const jsonWebhookObject = JSON.parse(jsonWebhookContent);
+
+    if ('events' in jsonWebhookObject) {
+        if (!bundled.webhooks) {
+            bundled.webhooks = {};
+        }
+        for (const event in jsonWebhookObject.events) {
+            bundled.webhooks[event] = jsonWebhookObject.events[event];
+        }
+    }
+}
+
 fs.writeFileSync(path.join(__dirname, '..', '..', 'api-open-delivery', 'openapi.json'), JSON.stringify(bundled, null, 2));

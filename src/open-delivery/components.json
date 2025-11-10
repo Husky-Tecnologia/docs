@@ -8,6 +8,19 @@
                 "description": "Token de acesso OAuth 2.0 obtido através do endpoint `/oauth/token`.\n\nUse o formato: `Authorization: Bearer {access_token}`\n\nO token deve ser incluído em todas as requisições aos endpoints protegidos.\n"
             }
         },
+        "requestBodies": {
+            "DeliveryEvent": {
+                "description": "Novo evento",
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/DeliveryOrderEvent"
+                        }
+                    }
+                }
+            }
+        },
         "schemas": {
             "AccessTokenResponse": {
                 "type": "object",
@@ -87,7 +100,8 @@
                         "$ref": "#/components/schemas/MerchantData"
                     },
                     "pickupAddress": {
-                        "$ref": "#/components/schemas/AddressData"
+                        "$ref": "#/components/schemas/AddressData",
+                        "description": "Endereço de coleta do pedido."
                     },
                     "notifyPickup": {
                         "type": "boolean",
@@ -101,16 +115,17 @@
                     },
                     "returnToMerchant": {
                         "type": "boolean",
-                        "description": "Se a entrega deve retornar ao merchant em caso de falha",
+                        "description": "Informa se o entregador deve retornar ao endereço de coleta após a entrega ter sido efetuada.",
                         "example": false
                     },
                     "canCombine": {
                         "type": "boolean",
-                        "description": "Se a entrega pode ser combinada com outras",
+                        "description": "Informa se a logística pode combinar este pedido com outros pedidos na mesma entrega.",
                         "example": false
                     },
                     "deliveryAddress": {
-                        "$ref": "#/components/schemas/AddressData"
+                        "$ref": "#/components/schemas/AddressData",
+                        "description": "Endereço de entrega do pedido."
                     },
                     "customerName": {
                         "type": "string",
@@ -188,17 +203,8 @@
                     },
                     "customerPhoneLocalizer": {
                         "type": "string",
-                        "description": "Localizador do telefone do cliente",
-                        "example": "whatsapp"
-                    },
-                    "metadata": {
-                        "type": "object",
-                        "description": "Metadados adicionais em formato JSON",
-                        "additionalProperties": true,
-                        "example": {
-                            "orderSource": "mobile_app",
-                            "priority": "high"
-                        }
+                        "description": "Código localizador. Usado hoje para integração de pedido Ifood, para o fluxo de confirmação de pedido.",
+                        "example": "12345678"
                     }
                 }
             },
@@ -260,12 +266,15 @@
                 "properties": {
                     "country": {
                         "type": "string",
-                        "description": "País",
-                        "example": "Brasil"
+                        "description": "País (sigla). Padrão ISO 3166-1.",
+                        "minLength": 2,
+                        "maxLength": 2,
+                        "exclusiveMinimum": true,
+                        "example": "BR"
                     },
                     "state": {
                         "type": "string",
-                        "description": "Estado (sigla)",
+                        "description": "Estado (sigla). Padrão ISO 3166-2.",
                         "example": "SP"
                     },
                     "city": {
@@ -351,7 +360,7 @@
                     }
                 }
             },
-            "VehicleData": {
+            "VehicleRequiredData": {
                 "type": "object",
                 "required": [
                     "type",
@@ -383,7 +392,16 @@
                         ],
                         "description": "Tipo de container necessário",
                         "example": "NORMAL"
-                    },
+                    }
+                }
+            },
+            "VehicleData": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/VehicleRequiredData"
+                    }
+                ],
+                "properties": {
                     "containerSize": {
                         "type": "string",
                         "enum": [
@@ -423,7 +441,10 @@
                             "USD",
                             "EUR"
                         ],
-                        "description": "Moeda",
+                        "description": "Moeda. Padrão ISO 4217.",
+                        "minLength": 3,
+                        "maxLength": 3,
+                        "exclusiveMinimum": true,
                         "example": "BRL"
                     }
                 }
@@ -537,11 +558,12 @@
                         "$ref": "#/components/schemas/MerchantData"
                     },
                     "pickupAddress": {
-                        "$ref": "#/components/schemas/AddressData"
+                        "$ref": "#/components/schemas/AddressData",
+                        "description": "Endereço de coleta do pedido."
                     },
                     "returnToMerchant": {
                         "type": "boolean",
-                        "description": "Se a entrega deve retornar ao merchant em caso de falha",
+                        "description": "Informa se o entregador deve retornar ao endereço de coleta após a entrega ter sido efetuada.",
                         "example": false
                     },
                     "canCombine": {
@@ -550,7 +572,8 @@
                         "example": false
                     },
                     "deliveryAddress": {
-                        "$ref": "#/components/schemas/AddressData"
+                        "$ref": "#/components/schemas/AddressData",
+                        "description": "Endereço de entrega do pedido."
                     },
                     "vehicle": {
                         "$ref": "#/components/schemas/VehicleData"
@@ -961,7 +984,344 @@
                         "example": "https://tracking.example.com/ORDER-12345"
                     }
                 }
-            }
+            },
+            "DeliveryOrderEvent": {
+                "description": "Objeto de evento de entrega",
+                "type": "object",
+                "required": [
+                    "deliveryId",
+                    "orderId",
+                    "orderDisplayId",
+                    "merchant",
+                    "event",
+                    "customerName"
+                ],
+                "properties": {
+                    "deliveryId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "O ID da entrega gerado pelo serviço de logística.",
+                        "example": "48ae4d68-6626-11ed-9022-0242ac120002"
+                    },
+                    "orderId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "O ID do pedido gerado pelo **`Aplicativo de Pedidos`**.",
+                        "example": "52122852-6626-11ed-9022-0242ac120002"
+                    },
+                    "orderDisplayId": {
+                        "type": "string",
+                        "description": "ID do pedido exibido na interface do **`Aplicativo de Pedidos`** para o cliente.",
+                        "example": "96b41025"
+                    },
+                    "merchant": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "name"
+                        ],
+                        "description": "Informações do comerciante.",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "description": "Identificador único. Identifica o comerciante em diferentes sistemas que o comerciante comunicará.  \nEste ID deve ser gerado pelo **`Serviço de Software`** do comerciante.\n\n> Para evitar duplicatas entre diferentes comerciantes, é recomendado que o software crie o merchantId usando:  \n> `Documento do Comerciante + UUID`\n\n> Se isso não for possível, é recomendado usar pelo menos um UUID.",
+                                "minLength": 36,
+                                "maxLength": 100,
+                                "example": "22815773000169-dbc7e35a-c936-4665-9e13-eb55eb8b6824"
+                            },
+                            "name": {
+                                "type": "string",
+                                "description": "Nome público do comerciante",
+                                "maxLength": 500,
+                                "example": "Pizza Plaza"
+                            }
+                        }
+                    },
+                    "event": {
+                        "description": "Informações do evento atual.",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DeliveryEvent"
+                            }
+                        ]
+                    },
+                    "problem": {
+                        "type": "array",
+                        "description": "Lista de problemas que podem ocorrer.",
+                        "items": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/DeliveryProblem"
+                                }
+                            ]
+                        }
+                    },
+                    "customerName": {
+                        "type": "string",
+                        "description": "Nome do cliente."
+                    },
+                    "vehicle": {
+                        "description": "Informações do veículo escolhido. \n> Esta propriedade é **OBRIGATÓRIA** quando `event > type` é diferente de `PENDING`, `REJECTED` e `CANCELLED`",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/VehicleRequiredData"
+                            }
+                        ]
+                    },
+                    "deliveryPrice": {
+                        "description": "Informações de preço de entrega.\n> Esta propriedade é **OBRIGATÓRIA** quando `event > type` é diferente de `PENDING`, `REJECTED` e `CANCELLED`",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DeliveryPrice"
+                            }
+                        ]
+                    },
+                    "eta": {
+                        "description": "Tempos estimados de coleta e entrega. \n> Esta propriedade é **OBRIGATÓRIA** quando `event > type` é diferente de `PENDING`, `REJECTED` e `CANCELLED` ",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/ETA"
+                            }
+                        ]
+                    },
+                    "deliveryPerson": {
+                        "description": "Informações do entregador. Caso a entrega esteja sem entregador, o campo id será preenchido com a string `UNDEFINED`.",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DeliveryMan"
+                            }
+                        ]
+                    },
+                    "geoLocalization": {
+                        "description": "Informações de localização geográfica.",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/GeoLocalization"
+                            }
+                        ]
+                    }
+                }
+            },
+            "DeliveryEvent": {
+                "description": "Objeto de evento de entrega.",
+                "type": "object",
+                "required": [
+                    "type",
+                    "datetime"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "O evento de entrega atual.",
+                        "enum": [
+                            "PENDING",
+                            "ACCEPTED",
+                            "REJECTED",
+                            "PICKUP_ONGOING",
+                            "ARRIVED_AT_MERCHANT",
+                            "ORDER_PICKED",
+                            "DELIVERY_ONGOING",
+                            "ARRIVED_AT_CUSTOMER",
+                            "ORDER_DELIVERED",
+                            "RETURNING_TO_MERCHANT",
+                            "RETURNED_TO_MERCHANT",
+                            "DELIVERY_FINISHED",
+                            "CANCELLED"
+                        ]
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Informado quando o evento é `CANCELLED`."
+                    },
+                    "datetime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data e hora quando o evento ocorreu. padrão ISO 8601, timezone UTC."
+                    },
+                    "rejectionInfo": {
+                        "description": "Informado quando o evento é `REJECTED`.",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DeliveryEventDenied"
+                            }
+                        ]
+                    }
+                }
+            },
+            "DeliveryPrice": {
+                "description": "Preço de entrega",
+                "type": "object",
+                "required": [
+                    "price",
+                    "pricingList",
+                    "additionalPricePercentual"
+                ],
+                "properties": {
+                    "price": {
+                        "description": "Preço calculado da entrega na logistica.",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/PriceData"
+                            }
+                        ]
+                    },
+                    "pricingList": {
+                        "type": "string",
+                        "description": "Indica se o preço foi calculado com dinâmica ou normal.",
+                        "enum": [
+                            "NORMAL",
+                            "DYNAMIC"
+                        ]
+                    },
+                    "additionalPricePercentual": {
+                        "type": "number",
+                        "description": "Indica o percentual adicional da dinâmica."
+                    }
+                }
+            },
+            "DeliveryMan": {
+                "description": "Entregador",
+                "type": "object",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Identificador único do entregador."
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Nome do entregador."
+                    }
+                }
+            },
+            "GeoLocalization": {
+                "description": "Localização geográfica",
+                "type": "object",
+                "required": [
+                    "latitude",
+                    "longitude"
+                ],
+                "properties": {
+                    "latitude": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Indica a coordenada de latitude da posição atual do entregador. Valores estão restritos ao intervalo [[-90, 90]].",
+                        "example": -23.54809
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Indica a coordenada de longitude da posição atual do entregador. Valores estão restritos ao intervalo [[-180, 180]].",
+                        "example": -46.63638
+                    }
+                }
+            },
+            "ETA": {
+                "description": "ETA",
+                "type": "object",
+                "required": [
+                    "updateMethod",
+                    "pickupEtaInMinutes",
+                    "pickupEtaDatetime",
+                    "deliveryEtaInMinutes",
+                    "deliveryEtaDatetime",
+                    "maxDeliveryTime"
+                ],
+                "properties": {
+                    "updateMethod": {
+                        "type": "string",
+                        "description": "Sempre enviamos como ONLINE.",
+                        "enum": [
+                            "OFFLINE",
+                            "ONLINE"
+                        ],
+                        "example": "ONLINE"
+                    },
+                    "pickupEtaInMinutes": {
+                        "type": "integer",
+                        "description": "Tempo estimado de coleta em minutos."
+                    },
+                    "pickupEtaDatetime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data e hora estimada para coleta."
+                    },
+                    "deliveryEtaInMinutes": {
+                        "type": "integer",
+                        "description": "Tempo estimado de entrega em minutos."
+                    },
+                    "deliveryEtaDatetime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data e hora estimada para entrega."
+                    },
+                    "returnToMerchantEtaInMinutes": {
+                        "type": "integer",
+                        "description": "Tempo estimado de retorno ao mercado em minutos. Informado quando `returnToMerchant` é `true`."
+                    },
+                    "returnToMerchantEtaDatetime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data e hora estimada para retorno ao mercado. Informado quando `returnToMerchant` é `true`."
+                    },
+                    "maxDeliveryTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data e hora máxima para entrega."
+                    }
+                }
+            },
+            "DeliveryProblem": {
+                "description": "Objeto de problema de entrega.",
+                "type": "object",
+                "required": [
+                    "reason",
+                    "datetime",
+                    "canFinishDeliver",
+                    "needMerchantAction"
+                ],
+                "properties": {
+                    "reason": {
+                        "type": "string",
+                        "description": "Motivo do problema.",
+                        "enum": [
+                            "DELIVERYPERSON_OCCURRENCE",
+                            "PAYMENT_PROBLEMS",
+                            "WRONG_PRODUCT_OR_ITEM",
+                            "ORDER_DELAYED",
+                            "ORDER_DAMAGED_OR_VIOLATED",
+                            "CUSTOMER_DID_NOT_PLACE_ORDER",
+                            "CUSTOMER_ADDRESS_UNKNOWN",
+                            "ORDER_MISSING_ITEMS",
+                            "NOBODY_TO_RECEIVE",
+                            "DELIVERYPERSON_WAITING_PAYMENT_FOR_ALREADY_PAID_ORDER",
+                            "ORDER_DELIVERED_WITHOUT_PAYMENT",
+                            "FRAUD_OR_THEFT",
+                            "OTHER"
+                        ]
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Informações mais detalhadas sobre o problema."
+                    },
+                    "datetime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Data e hora quando o problema ocorreu. padrão ISO 8601, timezone UTC."
+                    },
+                    "canFinishDeliver": {
+                        "type": "boolean",
+                        "description": "Informa se ainda é possível finalizar a entrega."
+                    },
+                    "needMerchantAction": {
+                        "type": "boolean",
+                        "description": "Informa se o comerciante precisa realizar alguma ação para que a entrega continue."
+                    }
+                }
+            }            
         }
     }
 }

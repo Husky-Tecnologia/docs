@@ -101,8 +101,7 @@
                                     "combinedOrdersIds": null,
                                     "sourceAppId": null,
                                     "sourceOrderId": null,
-                                    "customerPhoneLocalizer": null,
-                                    "metadata": null
+                                    "customerPhoneLocalizer": null
                                 }
                             },
                             "offline_payment": {
@@ -189,11 +188,7 @@
                                     "combinedOrdersIds": null,
                                     "sourceAppId": "APP-001",
                                     "sourceOrderId": "SRC-12346",
-                                    "customerPhoneLocalizer": null,
-                                    "metadata": {
-                                        "orderSource": "mobile_app",
-                                        "priority": "high"
-                                    }
+                                    "customerPhoneLocalizer": null
                                 }
                             }
                         }
