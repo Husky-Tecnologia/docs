@@ -2412,6 +2412,16 @@
         ]
       }
     },
+    "/test": {
+      "post": {
+        "operationId": "test",
+        "tags": [
+          "Teste"
+        ],
+        "summary": "Teste",
+        "description": "Teste"
+      }
+    },
     "/unfinishedStatusReasons": {
       "get": {
         "operationId": "unfinishedStatusReasons",
