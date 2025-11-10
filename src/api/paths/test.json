@@ -1,0 +1,13 @@
+{
+    "path": "/test",
+    "methods": {
+        "post": {
+            "operationId": "test",
+            "tags": [
+                "Teste"
+            ],
+            "summary": "Teste",
+            "description": "Teste",
+        }
+    }
+}
