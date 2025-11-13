@@ -6,8 +6,8 @@
             "tags": [
                 "Entregas"
             ],
-            "summary": "Alteração de Informações",
-            "description": "teste",
+            "summary": "Atualizar Informações da Entrega",
+            "description": "Permite atualizar informações específicas de uma entrega, como dados de origem, código do pedido e informações de destino (nome, telefone e observações).",
             "parameters": [
                 {
                     "$ref": "#/components/parameters/live_mode"
@@ -17,28 +17,67 @@
                 }
             ],
             "requestBody": {
+                "required": true,
                 "content": {
                     "application/json": {
                         "schema": {
                             "required": [
-                                "tracking",
-                                "status"
+                                "logistic_order_tracking",
+                                "logistic_subclient_publicID"
                             ],
                             "properties": {
-                                "tracking": {
-                                    "description": "Código de identificação da entrega",
+                                "logistic_order_tracking": {
+                                    "description": "Código de rastreamento da entrega",
                                     "type": "string",
-                                    "example": "TRACKING_CODE"
+                                    "example": "ABC123DEF456"
                                 },
-                                "status": {
-                                    "description": "ID do status para alteração",
-                                    "type": "integer",
-                                    "example": 2
+                                "logistic_subclient_publicID": {
+                                    "description": "ID público do subcliente",
+                                    "type": "string",
+                                    "example": "subclient_123"
                                 },
-                                "reason": {
-                                    "description": "Código do motivo de não finalização (obrigatório para status 9). Consulte [/unfinishedStatusReasons](#/unfinishedStatusReasons) para obter a lista de motivos disponíveis.",
-                                    "type": "integer",
-                                    "example": 1
+                                "specifications": {
+                                    "type": "object",
+                                    "description": "Especificações da entrega que podem ser atualizadas",
+                                    "properties": {
+                                        "orderId": {
+                                            "description": "Código do pedido",
+                                            "type": "string",
+                                            "example": "ORDER_001"
+                                        },
+                                        "origin": {
+                                            "description": "Origem do pedido",
+                                            "type": "string",
+                                            "example": "E-commerce"
+                                        }
+                                    }
+                                },
+                                "addresses": {
+                                    "type": "object",
+                                    "description": "Informações de endereço para atualização",
+                                    "properties": {
+                                        "dropoff": {
+                                            "type": "object",
+                                            "description": "Informações do local de entrega",
+                                            "properties": {
+                                                "name": {
+                                                    "description": "Nome do destinatário",
+                                                    "type": "string",
+                                                    "example": "João Silva"
+                                                },
+                                                "phone": {
+                                                    "description": "Telefone do destinatário",
+                                                    "type": "string",
+                                                    "example": "(11) 99999-9999"
+                                                },
+                                                "obs": {
+                                                    "description": "Observações adicionais para o destino",
+                                                    "type": "string",
+                                                    "example": "Entregar após às 14h"
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             },
                             "type": "object"
@@ -48,20 +87,20 @@
             },
             "responses": {
                 "200": {
-                    "description": "Status alterado com sucesso",
+                    "description": "Entrega atualizada com sucesso",
                     "content": {
                         "application/json": {
                             "schema": {
                                 "properties": {
                                     "success": {
                                         "type": "integer",
-                                        "description": "Código de status da resposta. 1 = Sucesso",
+                                        "description": "Código de status da resposta. 1 = Sucesso, 0 = Erro",
                                         "example": 1
                                     },
                                     "message": {
                                         "type": "string",
                                         "description": "Mensagem de retorno da solicitação",
-                                        "example": "Status Atualizado!"
+                                        "example": "Informações da entrega atualizadas com sucesso"
                                     }
                                 },
                                 "type": "object"
@@ -70,7 +109,7 @@
                     }
                 },
                 "400": {
-                    "description": "Erro ao alterar status",
+                    "description": "Erro na requisição",
                     "content": {
                         "application/json": {
                             "schema": {
@@ -78,12 +117,12 @@
                                     "success": {
                                         "type": "integer",
                                         "description": "Código de erro",
-                                        "example": 1
+                                        "example": 0
                                     },
                                     "message": {
                                         "type": "string",
-                                        "description": "Mensagem de erro",
-                                        "example": "O tracking da entrega é inválido, ele deve ser alfanumérico com 64 caracteres"
+                                        "description": "Mensagem de erro detalhada",
+                                        "example": "O campo logistic_order_tracking é obrigatório"
                                     }
                                 },
                                 "type": "object"
@@ -95,7 +134,26 @@
                     "$ref": "#/components/responses/401"
                 },
                 "404": {
-                    "$ref": "#/components/responses/404"
+                    "description": "Entrega não encontrada",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "success": {
+                                        "type": "integer",
+                                        "description": "Código de erro",
+                                        "example": 0
+                                    },
+                                    "message": {
+                                        "type": "string",
+                                        "description": "Mensagem de erro",
+                                        "example": "Entrega não encontrada ou não pertence a este subcliente"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
                 },
                 "405": {
                     "$ref": "#/components/responses/405"
