@@ -121,11 +121,11 @@
                     "ORDER_UPDATED": "#/components/schemas/EventOrderResourceUpdated",
                     "ORDER_STATUS_UPDATED": "#/components/schemas/EventOrderResourceStatusUpdated",
                     "ORDER_DRIVER_UPDATED": "#/components/schemas/EventOrderResourceDriverUpdated",
-                    "CLIENT_CREATED": "#/components/schemas/EventClientResourceCreatedOrUpdated",
-                    "CLIENT_UPDATED": "#/components/schemas/EventClientResourceCreatedOrUpdated",
+                    "CLIENT_CREATED": "#/components/schemas/EventClientResourceCreated",
+                    "CLIENT_UPDATED": "#/components/schemas/EventClientResourceUpdated",
                     "CLIENT_STATUS_UPDATED": "#/components/schemas/EventClientResourceStatusUpdated",
-                    "DRIVER_CREATED": "#/components/schemas/EventDriverResourceCreatedOrUpdated",
-                    "DRIVER_UPDATED": "#/components/schemas/EventDriverResourceCreatedOrUpdated",
+                    "DRIVER_CREATED": "#/components/schemas/EventDriverResourceCreated",
+                    "DRIVER_UPDATED": "#/components/schemas/EventDriverResourceUpdated",
                     "DRIVER_STATUS_UPDATED": "#/components/schemas/EventDriverResourceStatusUpdated",
                     "FLEET_QUEUE": "#/components/schemas/EventFleetQueue"
                 }
@@ -162,8 +162,9 @@
             "description": "Resource",
             "allOf": [
                 {
-                    "$ref": "#/components/schemas/WebhookEvent",
-                    "title": "ORDER_CREATED",
+                    "$ref": "#/components/schemas/WebhookEvent"
+                },
+                {
                     "type": "object",
                     "properties": {
                         "event_context": {
@@ -467,6 +468,9 @@
                             }
                         }
                     }
+                },
+                {
+                    "title": "ORDER_CREATED"
                 }
             ]
         },
@@ -474,7 +478,9 @@
             "description": "Resource",
             "allOf": [
                 {
-                    "$ref": "#/components/schemas/EventOrderResourceCreated",
+                    "$ref": "#/components/schemas/EventOrderResourceCreated"
+                },
+                {
                     "title": "ORDER_UPDATED"
                 }
             ]
@@ -484,10 +490,6 @@
             "allOf": [
                 {
                     "$ref": "#/components/schemas/WebhookEvent"
-                },
-                {
-                    "title": "ORDER_STATUS_UPDATED",
-                    "type": "object"
                 },
                 {
                     "properties": {
@@ -500,14 +502,7 @@
                             "type": "string",
                             "description": "Token do embarcador",
                             "example": "1234567890"
-                        }
-                    }
-                },
-                {
-                    "type": "object"
-                },
-                {
-                    "properties": {
+                        },
                         "resource": {
                             "type": "object",
                             "properties": {
@@ -544,6 +539,9 @@
                             }
                         }
                     }
+                },
+                {
+                    "title": "ORDER_STATUS_UPDATED"
                 }
             ]
         },
@@ -551,9 +549,9 @@
             "description": "Resource",
             "allOf": [
                 {
-                    "$ref": "#/components/schemas/WebhookEvent",
-                    "title": "ORDER_DRIVER_UPDATED",
-                    "type": "object",
+                    "$ref": "#/components/schemas/WebhookEvent"
+                },
+                {
                     "properties": {
                         "event_context": {
                             "type": "string",
@@ -585,17 +583,17 @@
                             }
                         }
                     }
+                },
+                {
+                    "title": "ORDER_DRIVER_UPDATED"
                 }
             ]
         },
-        "EventClientResourceCreatedOrUpdated": {
+        "EventClientResourceCreated": {
             "description": "Resource",
             "allOf": [
                 {
                     "$ref": "#/components/schemas/WebhookEvent"
-                },
-                {
-                    "type": "object"
                 },
                 {
                     "properties": {
@@ -603,14 +601,7 @@
                             "type": "string",
                             "description": "Token da operação",
                             "example": "1234567890"
-                        }
-                    }
-                },
-                {
-                    "type": "object"
-                },
-                {
-                    "properties": {
+                        },
                         "resource": {
                             "type": "object",
                             "properties": {
@@ -737,6 +728,20 @@
                             }
                         }
                     }
+                },
+                {
+                    "title": "CLIENT_CREATED"
+                }
+            ]
+        },
+        "EventClientResourceUpdated": {
+            "description": "Resource",
+            "allOf": [
+                {
+                    "$ref": "#/components/schemas/EventClientResourceCreated"
+                },
+                {
+                    "title": "CLIENT_UPDATED"
                 }
             ]
         },
@@ -744,10 +749,7 @@
             "description": "Resource",
             "allOf": [
                 {
-                    "$ref": "#/components/schemas/EventClientResourceCreatedOrUpdated"
-                },
-                {
-                    "type": "object"
+                    "$ref": "#/components/schemas/EventClientResourceCreated"
                 },
                 {
                     "properties": {
@@ -762,17 +764,17 @@
                             }
                         }
                     }
+                },
+                {
+                    "title": "CLIENT_STATUS_UPDATED"
                 }
             ]
         },
-        "EventDriverResourceCreatedOrUpdated": {
+        "EventDriverResourceCreated": {
             "description": "Resource",
             "allOf": [
                 {
                     "$ref": "#/components/schemas/WebhookEvent"
-                },
-                {
-                    "type": "object"
                 },
                 {
                     "properties": {
@@ -780,14 +782,7 @@
                             "type": "string",
                             "description": "Token da operação",
                             "example": "1234567890"
-                        }
-                    }
-                },
-                {
-                    "type": "object"
-                },
-                {
-                    "properties": {
+                        },
                         "resource": {
                             "type": "object",
                             "properties": {
@@ -798,6 +793,20 @@
                             }
                         }
                     }
+                },
+                {
+                    "title": "DRIVER_CREATED"
+                }
+            ]
+        },
+        "EventDriverResourceUpdated": {
+            "description": "Resource",
+            "allOf": [
+                {
+                    "$ref": "#/components/schemas/EventDriverResourceCreated"
+                },
+                {
+                    "title": "DRIVER_UPDATED"
                 }
             ]
         },
@@ -805,10 +814,7 @@
             "description": "Resource",
             "allOf": [
                 {
-                    "$ref": "#/components/schemas/EventDriverResourceCreatedOrUpdated"
-                },
-                {
-                    "type": "object"
+                    "$ref": "#/components/schemas/EventDriverResourceCreated"
                 },
                 {
                     "properties": {
@@ -823,6 +829,9 @@
                             }
                         }
                     }
+                },
+                {
+                    "title": "DRIVER_STATUS_UPDATED"
                 }
             ]
         },
@@ -831,9 +840,6 @@
             "allOf": [
                 {
                     "$ref": "#/components/schemas/WebhookEvent"
-                },
-                {
-                    "type": "object"
                 },
                 {
                     "properties": {
@@ -871,12 +877,15 @@
                             }
                         }
                     }
+                },
+                {
+                    "title": "FLEET_QUEUE"
                 }
             ]
         }
     },
     "events": {
-        "/": {
+        "event": {
             "post": {
                 "operationId": "events",
                 "tags": [

@@ -34,7 +34,7 @@
           "all"
         ],
         "example": "ORDER_STATUS_UPDATED",
-        "description": "Tipo de evento para notificação. Para mais detalhes sobre os possíveis eventos, consulte a seção [Webhooks](/api-reference/webhooks/webhook).\n<br>\nSe informado ```all```, todos os eventos que existem hoje (e futuros) serão notificados."
+        "description": "Tipo de evento para notificação. Para mais detalhes sobre os possíveis eventos, consulte a seção [Webhooks](/api-reference/webhooks/webhook).\n\nSe informado ```all```, todos os eventos que existem hoje (e futuros) serão notificados."
       },
       "DriverObject": {
         "type": "object",
@@ -157,11 +157,11 @@
             "ORDER_UPDATED": "#/components/schemas/EventOrderResourceUpdated",
             "ORDER_STATUS_UPDATED": "#/components/schemas/EventOrderResourceStatusUpdated",
             "ORDER_DRIVER_UPDATED": "#/components/schemas/EventOrderResourceDriverUpdated",
-            "CLIENT_CREATED": "#/components/schemas/EventClientResourceCreatedOrUpdated",
-            "CLIENT_UPDATED": "#/components/schemas/EventClientResourceCreatedOrUpdated",
+            "CLIENT_CREATED": "#/components/schemas/EventClientResourceCreated",
+            "CLIENT_UPDATED": "#/components/schemas/EventClientResourceUpdated",
             "CLIENT_STATUS_UPDATED": "#/components/schemas/EventClientResourceStatusUpdated",
-            "DRIVER_CREATED": "#/components/schemas/EventDriverResourceCreatedOrUpdated",
-            "DRIVER_UPDATED": "#/components/schemas/EventDriverResourceCreatedOrUpdated",
+            "DRIVER_CREATED": "#/components/schemas/EventDriverResourceCreated",
+            "DRIVER_UPDATED": "#/components/schemas/EventDriverResourceUpdated",
             "DRIVER_STATUS_UPDATED": "#/components/schemas/EventDriverResourceStatusUpdated",
             "FLEET_QUEUE": "#/components/schemas/EventFleetQueue"
           }
@@ -198,8 +198,9 @@
         "description": "Resource",
         "allOf": [
           {
-            "$ref": "#/components/schemas/WebhookEvent",
-            "title": "ORDER_CREATED",
+            "$ref": "#/components/schemas/WebhookEvent"
+          },
+          {
             "type": "object",
             "properties": {
               "event_context": {
@@ -503,6 +504,9 @@
                 }
               }
             }
+          },
+          {
+            "title": "ORDER_CREATED"
           }
         ]
       },
@@ -510,7 +514,9 @@
         "description": "Resource",
         "allOf": [
           {
-            "$ref": "#/components/schemas/EventOrderResourceCreated",
+            "$ref": "#/components/schemas/EventOrderResourceCreated"
+          },
+          {
             "title": "ORDER_UPDATED"
           }
         ]
@@ -520,10 +526,6 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/WebhookEvent"
-          },
-          {
-            "title": "ORDER_STATUS_UPDATED",
-            "type": "object"
           },
           {
             "properties": {
@@ -536,14 +538,7 @@
                 "type": "string",
                 "description": "Token do embarcador",
                 "example": "1234567890"
-              }
-            }
-          },
-          {
-            "type": "object"
-          },
-          {
-            "properties": {
+              },
               "resource": {
                 "type": "object",
                 "properties": {
@@ -580,6 +575,9 @@
                 }
               }
             }
+          },
+          {
+            "title": "ORDER_STATUS_UPDATED"
           }
         ]
       },
@@ -587,9 +585,9 @@
         "description": "Resource",
         "allOf": [
           {
-            "$ref": "#/components/schemas/WebhookEvent",
-            "title": "ORDER_DRIVER_UPDATED",
-            "type": "object",
+            "$ref": "#/components/schemas/WebhookEvent"
+          },
+          {
             "properties": {
               "event_context": {
                 "type": "string",
@@ -621,17 +619,17 @@
                 }
               }
             }
+          },
+          {
+            "title": "ORDER_DRIVER_UPDATED"
           }
         ]
       },
-      "EventClientResourceCreatedOrUpdated": {
+      "EventClientResourceCreated": {
         "description": "Resource",
         "allOf": [
           {
             "$ref": "#/components/schemas/WebhookEvent"
-          },
-          {
-            "type": "object"
           },
           {
             "properties": {
@@ -639,14 +637,7 @@
                 "type": "string",
                 "description": "Token da operação",
                 "example": "1234567890"
-              }
-            }
-          },
-          {
-            "type": "object"
-          },
-          {
-            "properties": {
+              },
               "resource": {
                 "type": "object",
                 "properties": {
@@ -773,6 +764,20 @@
                 }
               }
             }
+          },
+          {
+            "title": "CLIENT_CREATED"
+          }
+        ]
+      },
+      "EventClientResourceUpdated": {
+        "description": "Resource",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EventClientResourceCreated"
+          },
+          {
+            "title": "CLIENT_UPDATED"
           }
         ]
       },
@@ -780,10 +785,7 @@
         "description": "Resource",
         "allOf": [
           {
-            "$ref": "#/components/schemas/EventClientResourceCreatedOrUpdated"
-          },
-          {
-            "type": "object"
+            "$ref": "#/components/schemas/EventClientResourceCreated"
           },
           {
             "properties": {
@@ -798,17 +800,17 @@
                 }
               }
             }
+          },
+          {
+            "title": "CLIENT_STATUS_UPDATED"
           }
         ]
       },
-      "EventDriverResourceCreatedOrUpdated": {
+      "EventDriverResourceCreated": {
         "description": "Resource",
         "allOf": [
           {
             "$ref": "#/components/schemas/WebhookEvent"
-          },
-          {
-            "type": "object"
           },
           {
             "properties": {
@@ -816,14 +818,7 @@
                 "type": "string",
                 "description": "Token da operação",
                 "example": "1234567890"
-              }
-            }
-          },
-          {
-            "type": "object"
-          },
-          {
-            "properties": {
+              },
               "resource": {
                 "type": "object",
                 "properties": {
@@ -834,6 +829,20 @@
                 }
               }
             }
+          },
+          {
+            "title": "DRIVER_CREATED"
+          }
+        ]
+      },
+      "EventDriverResourceUpdated": {
+        "description": "Resource",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EventDriverResourceCreated"
+          },
+          {
+            "title": "DRIVER_UPDATED"
           }
         ]
       },
@@ -841,10 +850,7 @@
         "description": "Resource",
         "allOf": [
           {
-            "$ref": "#/components/schemas/EventDriverResourceCreatedOrUpdated"
-          },
-          {
-            "type": "object"
+            "$ref": "#/components/schemas/EventDriverResourceCreated"
           },
           {
             "properties": {
@@ -859,6 +865,9 @@
                 }
               }
             }
+          },
+          {
+            "title": "DRIVER_STATUS_UPDATED"
           }
         ]
       },
@@ -867,9 +876,6 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/WebhookEvent"
-          },
-          {
-            "type": "object"
           },
           {
             "properties": {
@@ -907,6 +913,9 @@
                 }
               }
             }
+          },
+          {
+            "title": "FLEET_QUEUE"
           }
         ]
       }
@@ -1022,7 +1031,7 @@
           "Entregas"
         ],
         "summary": "Cotação de entrega",
-        "description": "Solicita a cotação de uma entrega. Retorna o valor e distância da entrega.\n<br><br>\n**Rate Limit:** 100 requisições por minuto.",
+        "description": "Solicita a cotação de uma entrega. Retorna o valor e distância da entrega.",
         "parameters": [
           {
             "$ref": "#/components/parameters/live_mode"
@@ -1053,7 +1062,7 @@
                     "example": true
                   },
                   "return": {
-                    "description": "Define se a entrega terá retorno para a origem. \n<br>\ntrue = Retorno para a origem\n<br>\nfalse = Não tem retorno para a origem",
+                    "description": "Define se a entrega terá retorno para a origem. \n\ntrue = Retorno para a origem\n\nfalse = Não tem retorno para a origem",
                     "type": "boolean",
                     "example": true
                   },
@@ -2586,7 +2595,7 @@
           "Entregas"
         ],
         "summary": "Alteração de Status",
-        "description": "Altera o status de uma entrega já existente.\n<br><br>\n**Referências de status (ID - STATUS):**\n> `1` - Novo \\\n> `2` - Iniciado \\\n> `3` - Coletando \\\n> `4` - Entregando \\\n> `5` - No Cliente \\\n> `6` - Retornando \\\n> `7` - Finalizado \\\n> `8` - Cancelado \\\n> `9` - Não Finalizado",
+        "description": "Altera o status de uma entrega já existente.",
         "parameters": [
           {
             "$ref": "#/components/parameters/live_mode"
@@ -2610,12 +2619,14 @@
                     "example": "TRACKING_CODE"
                   },
                   "status": {
-                    "description": "ID do status para alteração",
+                    "description": "ID do status para alteração. \n\n **ID - STATUS:** \n * `1` - Novo \n * `2` - Iniciado \n * `3` - Coletando \n * `4` - Entregando \n * `5` - No Cliente \n * `6` - Retornando \n * `7` - Finalizado \n * `8` - Cancelado \n * `9` - Não Finalizado",
                     "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9,
                     "example": 2
                   },
                   "reason": {
-                    "description": "Código do motivo de não finalização (obrigatório para status 9). Consulte [/unfinishedStatusReasons](#/unfinishedStatusReasons) para obter a lista de motivos disponíveis.",
+                    "description": "Código do motivo de não finalização (obrigatório para status 9). Consulte [/unfinishedStatusReasons](/api-reference/entregas/unfinished-status-reasons) para obter a lista de motivos disponíveis.",
                     "type": "integer",
                     "example": 1
                   }
@@ -2694,7 +2705,7 @@
           "Entregas"
         ],
         "summary": "Consulta de Status da entrega",
-        "description": "Este endpoint recebe via POST um campo tracking_codes com um array de tracking de entregas e retorna o status delas.\n<br><br>\n**Por quanto tempo que as entregas estão disponíveis para consulta?**\n<br>\nEntregas em aberto sempre estão disponiveis para consulta. Entregas finalizadas estão disponíveis em um range de 7 dias \n(3 dias antes da data atual e 3 dias após a data atual) da data de agendamento da entrega. Por exemplo: uma entrega finalizada e que havia sido agendada para o \ndia 13/02/2025 só poderá ser consultada no endpoint até o dia 16/02/2025.\n<br>\nO payload de resposta retorna o motivo de Não Finalizado na sua forma de código. \nO código segue os Motivos de Status Não Finalizado que podem ser obtidos no endpoint /unfinishedStatusReasons que hoje está publico na documentação.",
+        "description": "Consulta o status de uma ou mais entregas.",
         "parameters": [
           {
             "$ref": "#/components/parameters/live_mode"
@@ -2897,13 +2908,12 @@
   "webhooks": {
     "event": {
       "post": {
-        "servers": [],
         "operationId": "events",
         "tags": [
           "Webhooks"
         ],
         "summary": "Eventos de notificação",
-        "description": "Trabalhamos com webhooks para notificações de eventos do sistema Husky. Para receber as notificações, é necessário cadastrar a URL de destino e o tipo de evento que será notificado.\n\n**Eventos disponíveis e o momento em que o evento será notificado:**\n**Eventos de Entrega:**\n> `ORDER_CREATED`: Quando uma nova entrega é criada\\\n> `ORDER_UPDATED`: Quando a entrega é atualizada\\\n> `ORDER_STATUS_UPDATED`: Quando o status da entrega é atualizado (ex: coletando, entregando, etc)\\\n> `ORDER_DRIVER_UPDATED`: Quando alterado o entregador da entrega\\\n**Eventos de Entregador:**\n> `FLEET_QUEUE`: Quando o entregador sai da fila do embarcador\\\n> `DRIVER_CREATED`: Quando um novo entregador é criado\\\n> `DRIVER_UPDATED`: Quando alterado os dados do entregador\\\n> `DRIVER_STATUS_UPDATED`: Quando alterado o status do entregador\\\n**Eventos de Embarcador:**\n> `CLIENT_CREATED`: Quando um novo embarcador é criado\\\n> `CLIENT_UPDATED`: Quando alterado os dados do embarcador\\\n> `CLIENT_STATUS_UPDATED`: Quando alterado o status do embarcador",
+        "description": "Evento de notificação enviado por webhook.",
         "requestBody": {
           "content": {
             "application/json": {
