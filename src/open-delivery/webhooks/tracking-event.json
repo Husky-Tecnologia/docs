@@ -1,6 +1,6 @@
 {
     "events": {
-        "/": {
+        "tracking-event": {
             "post": {
                 "operationId": "newLogisticEvent",
                 "security": [
