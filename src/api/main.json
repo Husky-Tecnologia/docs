@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "API Pública",
-    "description": "API da Husky, uma plataforma de logística para delivery e entregas. Aqui você encontra todas as informações necessárias para integrar o sistema Husky em seu aplicativo ou sistema.",
+    "description": "API da Husky, teste uma plataforma de logística para delivery e entregas. Aqui você encontra todas as informações necessárias para integrar o sistema Husky em seu aplicativo ou sistema.",
     "version": ""
   },
   "servers": [
