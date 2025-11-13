@@ -1371,7 +1371,7 @@
           "Autenticação"
         ],
         "summary": "Obter token de acesso",
-        "description": "Obtém um token de acesso OAuth 2.0 usando o fluxo Client Credentials.\n\n**Como autenticar:**\n\n1. Você precisa ter credenciais de cliente (client_id e client_secret) válidas\n2. Faça uma requisição POST para este endpoint enviando os parâmetros como `application/x-www-form-urlencoded`\n3. O token retornado deve ser usado no header `Authorization: Bearer {token}` em todas as requisições subsequentes\n4. O token tem validade de 7 dias (604800 segundos)\n5. Quando o token expirar, você precisará obter um novo token usando este mesmo endpoint\n\n**Exemplo de uso:**\n```bash\ncurl -X POST https://opendelivery.gohusky.net/logistic/oauth/token \\\n  -H \"Content-Type: application/x-www-form-urlencoded\" \\\n  -H \"Accept: application/json\" \\\n  -d \"grant_type=client_credentials&client_id=seu-client-id&client_secret=seu-client-secret\"\n```\n",
+        "description": "Obtém um token de acesso OAuth 2.0 usando o fluxo Client Credentials.",
         "operationId": "getAccessToken",
         "requestBody": {
           "required": true,
@@ -1488,7 +1488,7 @@
           "Entregas"
         ],
         "summary": "Verificar disponibilidade e preços de entrega",
-        "description": "Verifica a disponibilidade de veículos e calcula os preços de entrega para uma rota específica.\n\nEste endpoint permite verificar se há veículos disponíveis para realizar uma entrega e obter informações sobre os preços antes de criar uma nova solicitação de entrega.\n\n**Informações retornadas:**\n- Preço de entrega calculado\n- Veículos disponíveis e seus tipos\n- Quantidade total de veículos disponíveis",
+        "description": "Verifica a disponibilidade de veículos e calcula os preços de entrega para uma rota específica.",
         "operationId": "checkDeliveryAvailability",
         "security": [
           {
@@ -1637,7 +1637,7 @@
           "Entregas"
         ],
         "summary": "Obter detalhes da entrega",
-        "description": "Retorna informações detalhadas sobre uma entrega específica.\n\nEste endpoint retorna todas as informações relacionadas a uma entrega, incluindo:\n- Dados do pedido e merchant\n- Status e eventos da entrega\n- Informações do veículo e entregador\n- Preços e tempos\n- Problemas reportados (se houver)",
+        "description": "Retorna informações detalhadas sobre uma entrega específica.",
         "operationId": "getDeliveryDetails",
         "security": [
           {
@@ -1768,7 +1768,7 @@
           "Entregas"
         ],
         "summary": "Cancelar entrega",
-        "description": "Cancela uma entrega existente.\n\nEste endpoint permite cancelar uma entrega que já foi criada. O sistema retorna se há cobranças adicionais associadas ao cancelamento.",
+        "description": "Cancela uma entrega existente.",
         "operationId": "cancelDelivery",
         "security": [
           {
@@ -1891,7 +1891,7 @@
           "Entregas"
         ],
         "summary": "Solicitar nova entrega",
-        "description": "Cria uma nova solicitação de entrega no sistema logístico.\n\nEste endpoint permite criar uma nova entrega com todas as informações necessárias, incluindo endereços de coleta e entrega, dados do cliente, informações de pagamento e configurações do veículo.\n\n**Importante:**\n- A requisição é processada de forma assíncrona\n- A resposta retorna um `deliveryId` que deve ser usado para rastrear o status da entrega\n- O endpoint retorna status 202 (Accepted) quando a entrega é aceita para processamento\n- É necessário estar autenticado com token OAuth válido",
+        "description": "Cria uma nova solicitação de entrega no sistema logístico.",
         "operationId": "requestNewDelivery",
         "security": [
           {
@@ -2188,7 +2188,7 @@
           "Entregas"
         ],
         "summary": "Finalizar entrega",
-        "description": "Notifica o sistema que uma entrega foi finalizada.\n\n**Nota:** Este endpoint está atualmente em desenvolvimento e não processa o evento, apenas confirma o recebimento.",
+        "description": "Notifica o sistema que uma entrega foi finalizada.",
         "operationId": "finishDelivery",
         "security": [
           {
@@ -2265,7 +2265,7 @@
           "Entregas"
         ],
         "summary": "Reportar problema na entrega",
-        "description": "Reporta um problema ocorrido durante a entrega e a ação tomada para resolvê-lo.\n\nEste endpoint permite informar problemas que ocorreram durante o processo de entrega, como problemas de pagamento, endereço incorreto, pedido danificado, entre outros.",
+        "description": "Reporta um problema ocorrido durante a entrega e a ação tomada para resolvê-lo.",
         "operationId": "handleProblem",
         "security": [
           {
@@ -2370,7 +2370,7 @@
           "Entregas"
         ],
         "summary": "Informar que pedido foi coletado",
-        "description": "Notifica o sistema que um pedido foi coletado pelo entregador.\n\n**Nota:** Este endpoint está atualmente em desenvolvimento e não processa o evento, apenas confirma o recebimento.",
+        "description": "Notifica o sistema que um pedido foi coletado pelo entregador.",
         "operationId": "orderPicked",
         "security": [
           {
@@ -2447,7 +2447,7 @@
           "Entregas"
         ],
         "summary": "Informar que pedido está pronto para coleta",
-        "description": "Notifica o sistema que um pedido está pronto para ser coletado pelo entregador.\n\nEste endpoint deve ser chamado quando o estabelecimento finaliza o preparo do pedido e ele está pronto para ser coletado.",
+        "description": "Notifica o sistema que um pedido está pronto para ser coletado pelo entregador.",
         "operationId": "readyForPickup",
         "security": [
           {
@@ -2520,9 +2520,8 @@
     }
   },
   "webhooks": {
-    "tracking-event": {
+    "/": {
       "post": {
-        "servers": [],
         "operationId": "newLogisticEvent",
         "security": [
           {}
