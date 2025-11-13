@@ -6,7 +6,7 @@
                 "Entregas"
             ],
             "summary": "Reportar problema na entrega",
-            "description": "Reporta um problema ocorrido durante a entrega e a ação tomada para resolvê-lo.\n\nEste endpoint permite informar problemas que ocorreram durante o processo de entrega, como problemas de pagamento, endereço incorreto, pedido danificado, entre outros.",
+            "description": "Reporta um problema ocorrido durante a entrega e a ação tomada para resolvê-lo.",
             "operationId": "handleProblem",
             "security": [
                 {

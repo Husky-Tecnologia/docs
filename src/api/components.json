@@ -18,7 +18,7 @@
                     "all"
                 ],
                 "example": "ORDER_STATUS_UPDATED",
-                "description": "Tipo de evento para notificação. Para mais detalhes sobre os possíveis eventos, consulte a seção [Webhooks](/api-reference/webhooks/webhook).\n<br>\nSe informado ```all```, todos os eventos que existem hoje (e futuros) serão notificados."
+                "description": "Tipo de evento para notificação. Para mais detalhes sobre os possíveis eventos, consulte a seção [Webhooks](/api-reference/webhooks/webhook).\n\nSe informado ```all```, todos os eventos que existem hoje (e futuros) serão notificados."
             }
         },
         "parameters": {

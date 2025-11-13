@@ -7,7 +7,7 @@
                 "Entregas"
             ],
             "summary": "Consulta de Status da entrega",
-            "description": "Este endpoint recebe via POST um campo tracking_codes com um array de tracking de entregas e retorna o status delas.\n<br><br>\n**Por quanto tempo que as entregas estão disponíveis para consulta?**\n<br>\nEntregas em aberto sempre estão disponiveis para consulta. Entregas finalizadas estão disponíveis em um range de 7 dias \n(3 dias antes da data atual e 3 dias após a data atual) da data de agendamento da entrega. Por exemplo: uma entrega finalizada e que havia sido agendada para o \ndia 13/02/2025 só poderá ser consultada no endpoint até o dia 16/02/2025.\n<br>\nO payload de resposta retorna o motivo de Não Finalizado na sua forma de código. \nO código segue os Motivos de Status Não Finalizado que podem ser obtidos no endpoint /unfinishedStatusReasons que hoje está publico na documentação.",
+            "description": "Consulta o status de uma ou mais entregas.",
             "parameters": [
                 {
                     "$ref": "#/components/parameters/live_mode"

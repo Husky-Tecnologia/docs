@@ -2520,8 +2520,9 @@
     }
   },
   "webhooks": {
-    "/": {
+    "tracking-event": {
       "post": {
+        "servers": [],
         "operationId": "newLogisticEvent",
         "security": [
           {}

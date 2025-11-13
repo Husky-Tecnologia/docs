@@ -2,3 +2,45 @@
 title: 'Gerar Token'
 openapi: 'POST /oauth/token'
 ---
+
+## Como autenticar
+
+Siga os passos abaixo para obter e usar o token de acesso OAuth 2.0:
+
+<Steps>
+<Step title="Obter credenciais de cliente">
+Você precisa ter credenciais de cliente válidas (`client_id` e `client_secret`) fornecidas pela Husky.
+
+Entre em contato com o [suporte](mailto:suporte@gohusky.net) para obter suas credenciais se ainda não as possui.
+</Step>
+
+<Step title="Fazer requisição POST para obter o token">
+Faça uma requisição POST para este endpoint. Ler Parâmetros esperados mais abaixo.
+</Step>
+
+<Step title="Receber o token de acesso">
+A resposta retornará um objeto JSON com o token de acesso. O token tem validade de **7 dias (604800 segundos)**. 
+
+<Warning>
+A duração da validade pode ser alterada a qualquer momento, é preciso que sua integração esteja preparada para renovar token em caso de retorno como não autorizado.
+</Warning>
+</Step>
+
+<Step title="Usar o token nas requisições">
+O token retornado deve ser usado no header `Authorization` de todas as requisições subsequentes:
+
+```
+Authorization: Bearer {access_token}
+```
+
+Todos os endpoints protegidos requerem este token no header.
+</Step>
+
+<Step title="Renovar o token quando expirar">
+Quando o token expirar, você precisará obter um novo token usando este mesmo endpoint.
+
+<Warning>
+Se você receber um erro `401 Unauthorized`, verifique se o token não expirou e obtenha um novo token.
+</Warning>
+</Step>
+</Steps>

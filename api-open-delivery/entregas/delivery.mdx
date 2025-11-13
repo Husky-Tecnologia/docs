@@ -2,3 +2,10 @@
 title: 'Solicitação de nova entrega'
 openapi: 'POST /v1/logistics/delivery'
 ---
+Este endpoint permite criar uma nova entrega com todas as informações necessárias, incluindo endereços de coleta e entrega, dados do cliente, informações de pagamento e configurações do veículo.
+
+**Importante:**
+- A requisição é processada de forma assíncrona
+- A resposta retorna um `deliveryId` que deve ser usado para rastrear o status da entrega
+- O endpoint retorna status 202 (Accepted) quando a entrega é aceita para processamento
+- É necessário estar autenticado com token OAuth válido

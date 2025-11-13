@@ -6,7 +6,7 @@
                 "Entregas"
             ],
             "summary": "Solicitar nova entrega",
-            "description": "Cria uma nova solicitação de entrega no sistema logístico.\n\nEste endpoint permite criar uma nova entrega com todas as informações necessárias, incluindo endereços de coleta e entrega, dados do cliente, informações de pagamento e configurações do veículo.\n\n**Importante:**\n- A requisição é processada de forma assíncrona\n- A resposta retorna um `deliveryId` que deve ser usado para rastrear o status da entrega\n- O endpoint retorna status 202 (Accepted) quando a entrega é aceita para processamento\n- É necessário estar autenticado com token OAuth válido",
+            "description": "Cria uma nova solicitação de entrega no sistema logístico.",
             "operationId": "requestNewDelivery",
             "security": [
                 {

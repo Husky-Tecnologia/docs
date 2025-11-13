@@ -6,7 +6,7 @@
                 "Entregas"
             ],
             "summary": "Verificar disponibilidade e preços de entrega",
-            "description": "Verifica a disponibilidade de veículos e calcula os preços de entrega para uma rota específica.\n\nEste endpoint permite verificar se há veículos disponíveis para realizar uma entrega e obter informações sobre os preços antes de criar uma nova solicitação de entrega.\n\n**Informações retornadas:**\n- Preço de entrega calculado\n- Veículos disponíveis e seus tipos\n- Quantidade total de veículos disponíveis",
+            "description": "Verifica a disponibilidade de veículos e calcula os preços de entrega para uma rota específica.",
             "operationId": "checkDeliveryAvailability",
             "security": [
                 {

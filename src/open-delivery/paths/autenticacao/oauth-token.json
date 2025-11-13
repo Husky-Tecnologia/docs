@@ -6,7 +6,7 @@
                 "Autenticação"
             ],
             "summary": "Obter token de acesso",
-            "description": "Obtém um token de acesso OAuth 2.0 usando o fluxo Client Credentials.\n\n**Como autenticar:**\n\n1. Você precisa ter credenciais de cliente (client_id e client_secret) válidas\n2. Faça uma requisição POST para este endpoint enviando os parâmetros como `application/x-www-form-urlencoded`\n3. O token retornado deve ser usado no header `Authorization: Bearer {token}` em todas as requisições subsequentes\n4. O token tem validade de 7 dias (604800 segundos)\n5. Quando o token expirar, você precisará obter um novo token usando este mesmo endpoint\n\n**Exemplo de uso:**\n```bash\ncurl -X POST https://opendelivery.gohusky.net/logistic/oauth/token \\\n  -H \"Content-Type: application/x-www-form-urlencoded\" \\\n  -H \"Accept: application/json\" \\\n  -d \"grant_type=client_credentials&client_id=seu-client-id&client_secret=seu-client-secret\"\n```\n",
+            "description": "Obtém um token de acesso OAuth 2.0 usando o fluxo Client Credentials.",
             "operationId": "getAccessToken",
             "requestBody": {
                 "required": true,

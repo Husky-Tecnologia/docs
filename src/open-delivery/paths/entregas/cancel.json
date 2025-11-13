@@ -6,7 +6,7 @@
                 "Entregas"
             ],
             "summary": "Cancelar entrega",
-            "description": "Cancela uma entrega existente.\n\nEste endpoint permite cancelar uma entrega que já foi criada. O sistema retorna se há cobranças adicionais associadas ao cancelamento.",
+            "description": "Cancela uma entrega existente.",
             "operationId": "cancelDelivery",
             "security": [
                 {

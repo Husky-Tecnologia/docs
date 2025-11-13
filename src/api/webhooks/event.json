@@ -883,7 +883,7 @@
                     "Webhooks"
                 ],
                 "summary": "Eventos de notificação",
-                "description": "Trabalhamos com webhooks para notificações de eventos do sistema Husky. Para receber as notificações, é necessário cadastrar a URL de destino e o tipo de evento que será notificado.\n\n**Eventos disponíveis e o momento em que o evento será notificado:**\n**Eventos de Entrega:**\n> `ORDER_CREATED`: Quando uma nova entrega é criada\\\n> `ORDER_UPDATED`: Quando a entrega é atualizada\\\n> `ORDER_STATUS_UPDATED`: Quando o status da entrega é atualizado (ex: coletando, entregando, etc)\\\n> `ORDER_DRIVER_UPDATED`: Quando alterado o entregador da entrega\\\n**Eventos de Entregador:**\n> `FLEET_QUEUE`: Quando o entregador sai da fila do embarcador\\\n> `DRIVER_CREATED`: Quando um novo entregador é criado\\\n> `DRIVER_UPDATED`: Quando alterado os dados do entregador\\\n> `DRIVER_STATUS_UPDATED`: Quando alterado o status do entregador\\\n**Eventos de Embarcador:**\n> `CLIENT_CREATED`: Quando um novo embarcador é criado\\\n> `CLIENT_UPDATED`: Quando alterado os dados do embarcador\\\n> `CLIENT_STATUS_UPDATED`: Quando alterado o status do embarcador",
+                "description": "Evento de notificação enviado por webhook.",
                 "requestBody": {
                     "content": {
                         "application/json": {

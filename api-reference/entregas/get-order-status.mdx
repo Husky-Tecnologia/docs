@@ -3,3 +3,18 @@ title: 'Consulta de Status da entrega'
 openapi: 'POST /v2/getOrderStatus'
 ---
 
+**Por quanto tempo as entregas estão disponíveis para consulta?**
+
+Entregas em aberto sempre estão disponiveis para consulta. 
+Entregas finalizadas estão disponíveis em um range de 7 dias (3 dias antes da data atual e 3 dias após a data atual) da data de agendamento da entrega. 
+Por exemplo: uma entrega finalizada e que havia sido agendada para a data 13/02/2025 só poderá ser consultada no endpoint até a data 16/02/2025.
+
+<Info>
+O payload de resposta retorna o motivo de Não Finalizado na sua forma de código.
+
+O código segue os Motivos de Status Não Finalizado que podem ser obtidos no endpoint [/unfinishedStatusReasons](/api-reference/entregas/unfinished-status-reasons).
+</Info>
+
+## Rate limit
+Este endpoint tem o limite:
+- 1 requisições a cada 30 segundos.

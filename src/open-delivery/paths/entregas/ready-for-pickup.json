@@ -6,7 +6,7 @@
                 "Entregas"
             ],
             "summary": "Informar que pedido está pronto para coleta",
-            "description": "Notifica o sistema que um pedido está pronto para ser coletado pelo entregador.\n\nEste endpoint deve ser chamado quando o estabelecimento finaliza o preparo do pedido e ele está pronto para ser coletado.",
+            "description": "Notifica o sistema que um pedido está pronto para ser coletado pelo entregador.",
             "operationId": "readyForPickup",
             "security": [
                 {

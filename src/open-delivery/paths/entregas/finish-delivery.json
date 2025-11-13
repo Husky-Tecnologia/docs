@@ -6,7 +6,7 @@
                 "Entregas"
             ],
             "summary": "Finalizar entrega",
-            "description": "Notifica o sistema que uma entrega foi finalizada.\n\n**Nota:** Este endpoint está atualmente em desenvolvimento e não processa o evento, apenas confirma o recebimento.",
+            "description": "Notifica o sistema que uma entrega foi finalizada.",
             "operationId": "finishDelivery",
             "security": [
                 {

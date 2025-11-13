@@ -7,7 +7,7 @@
                 "Entregas"
             ],
             "summary": "Cotação de entrega",
-            "description": "Solicita a cotação de uma entrega. Retorna o valor e distância da entrega.\n<br><br>\n**Rate Limit:** 100 requisições por minuto.",
+            "description": "Solicita a cotação de uma entrega. Retorna o valor e distância da entrega.",
             "parameters": [
                 {
                     "$ref": "#/components/parameters/live_mode"
@@ -38,7 +38,7 @@
                                     "example": true
                                 },
                                 "return": {
-                                    "description": "Define se a entrega terá retorno para a origem. \n<br>\ntrue = Retorno para a origem\n<br>\nfalse = Não tem retorno para a origem",
+                                    "description": "Define se a entrega terá retorno para a origem. \n\ntrue = Retorno para a origem\n\nfalse = Não tem retorno para a origem",
                                     "type": "boolean",
                                     "example": true
                                 },

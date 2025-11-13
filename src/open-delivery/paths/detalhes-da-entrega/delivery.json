@@ -6,7 +6,7 @@
                 "Entregas"
             ],
             "summary": "Obter detalhes da entrega",
-            "description": "Retorna informações detalhadas sobre uma entrega específica.\n\nEste endpoint retorna todas as informações relacionadas a uma entrega, incluindo:\n- Dados do pedido e merchant\n- Status e eventos da entrega\n- Informações do veículo e entregador\n- Preços e tempos\n- Problemas reportados (se houver)",
+            "description": "Retorna informações detalhadas sobre uma entrega específica.",
             "operationId": "getDeliveryDetails",
             "security": [
                 {
