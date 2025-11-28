@@ -131,7 +131,6 @@
                     }
                 }
                 },
-                ,
                 "400": {
                     "description": "Eroo com validação de dados",
                     "content": {
