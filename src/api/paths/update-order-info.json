@@ -87,45 +87,70 @@
             },
             "responses": {
                 "200": {
-                    "description": "Entrega atualizada com sucesso",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "success": {
-                                        "type": "integer",
-                                        "description": "Código de status da resposta. 1 = Sucesso, 0 = Erro",
-                                        "example": 1
-                                    },
-                                    "message": {
-                                        "type": "string",
-                                        "description": "Mensagem de retorno da solicitação",
-                                        "example": "Informações da entrega atualizadas com sucesso"
-                                    }
-                                },
-                                "type": "object"
+                "description": "Requisição processada com sucesso.\n\n**IMPORTANTE:** se o valor do campo 'success' for diferente de `1`, houve um erro na atualização das informações da entrega. Em caso de erro, valide o campo 'message' para mais detalhes.",
+                "content": {
+                    "application/json": {
+                    "schema": {
+                        "oneOf": [
+                        {
+                            "title": "Sucesso",
+                            "description": "Informações da entrega atualizadas com sucesso.",
+                            "type": "object",
+                            "properties": {
+                            "success": {
+                                "type": "integer",
+                                "description": "Indica se a requisição foi processada com sucesso. `1` = Sucesso, qualquer outro valor indica que houve um erro.",
+                                "example": 1
+                            },
+                            "message": {
+                                "type": "string",
+                                "description": "Mensagem de retorno da solicitação",
+                                "example": "Entrega atualizada com sucesso."
+                            }
+                            }
+                        },
+                        {
+                            "title": "Erro",
+                            "description": "Houve um erro na atualização da entrega, valide o campo 'message' para mais detalhes.",
+                            "type": "object",
+                            "properties": {
+                            "success": {
+                                "type": "integer",
+                                "description": "Indica se a requisição foi processada com sucesso. `1` = Sucesso, qualquer outro valor indica que houve um erro.",
+                                "example": 0
+                            },
+                            "message": {
+                                "type": "string",
+                                "description": "Mensagem de retorno da solicitação",
+                                "example": "Erro ao atualizar a entrega."
+                            }
                             }
                         }
+                        ]
                     }
+                    }
+                }
                 },
+                ,
                 "400": {
-                    "description": "Erro na requisição",
+                    "description": "Eroo com validação de dados",
                     "content": {
                         "application/json": {
                             "schema": {
-                                "properties": {
-                                    "success": {
-                                        "type": "integer",
-                                        "description": "Código de erro",
-                                        "example": 0
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Os seguintes campos não são permitidos para edição: addresses.dropoff.name ."
+                                        }
                                     },
-                                    "message": {
-                                        "type": "string",
-                                        "description": "Mensagem de erro detalhada",
-                                        "example": "O campo logistic_order_tracking é obrigatório"
-                                    }
-                                },
-                                "type": "object"
+                                    "type": "object"
+                                }
                             }
                         }
                     }
@@ -134,26 +159,7 @@
                     "$ref": "#/components/responses/401"
                 },
                 "404": {
-                    "description": "Entrega não encontrada",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "success": {
-                                        "type": "integer",
-                                        "description": "Código de erro",
-                                        "example": 0
-                                    },
-                                    "message": {
-                                        "type": "string",
-                                        "description": "Mensagem de erro",
-                                        "example": "Entrega não encontrada ou não pertence a este subcliente"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
+                    "$ref": "#/components/responses/404"
                 },
                 "405": {
                     "$ref": "#/components/responses/405"
