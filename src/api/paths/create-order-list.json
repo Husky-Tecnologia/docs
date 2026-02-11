@@ -53,6 +53,11 @@
                                                 "description": "Define se a API deve geocodificar automaticamente o endereço informado",
                                                 "example": false
                                             },
+                                            "pincode": {
+                                                "type": "boolean",
+                                                "description": "Define se a entrega terá confirmação por PIN Code. Quando enviado como `true`, será retornado o campo `pincode` na resposta da criação da entrega. **ATENÇÃO:** É importante que guarde o valor, pois não será fornecido posteriormente.",
+                                                "example": true
+                                            },
                                             "orderId": {
                                                 "type": "string",
                                                 "description": "Número de identificação da entrega em um sistema externo",
@@ -318,10 +323,15 @@
                                                     "description": "Número da entrega na operação",
                                                     "type": "string",
                                                     "example": "123"
+                                                },
+                                                "pincode": {
+                                                    "description": "Código de confirmação por PIN Code. Este campo estará presente somente se a entrega tiver confirmação por PIN Code. **ATENÇÃO:** É importante que guarde o valor, pois não será fornecido posteriormente.",
+                                                    "type": "string",
+                                                    "example": "1234"
                                                 }
                                             },
                                             "type": "object"
-                                        }        
+                                        }
                                     },
                                     {
                                         "title": "Erro",
