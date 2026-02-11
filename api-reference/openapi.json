@@ -1284,6 +1284,11 @@
                           "description": "Define se a API deve geocodificar automaticamente o endereço informado",
                           "example": false
                         },
+                        "pincode": {
+                          "type": "boolean",
+                          "description": "Define se a entrega terá confirmação por PIN Code. Quando enviado como `true`, será retornado o campo `pincode` na resposta da criação da entrega. **ATENÇÃO:** É importante que guarde o valor, pois não será fornecido posteriormente.",
+                          "example": true
+                        },
                         "orderId": {
                           "type": "string",
                           "description": "Número de identificação da entrega em um sistema externo",
@@ -1549,6 +1554,11 @@
                             "description": "Número da entrega na operação",
                             "type": "string",
                             "example": "123"
+                          },
+                          "pincode": {
+                            "description": "Código de confirmação por PIN Code. Este campo estará presente somente se a entrega tiver confirmação por PIN Code. **ATENÇÃO:** É importante que guarde o valor, pois não será fornecido posteriormente.",
+                            "type": "string",
+                            "example": "1234"
                           }
                         },
                         "type": "object"
@@ -2818,95 +2828,123 @@
                       "description": "Trackings encontrados",
                       "type": "object",
                       "properties": {
-                        "orderTracking": {
+                        "[TRACKING_CODE]": {
                           "description": "Identificador da entrega",
-                          "type": "string",
-                          "example": "051aa70b607f97beeba3f5f9ee2a6b984a9f1489c3a74d6083afc59e1685cb2a"
-                        },
-                        "orderId": {
-                          "description": "Número da entrega na operação",
-                          "type": "string",
-                          "example": "1"
-                        },
-                        "status": {
-                          "description": "Status da entrega",
-                          "type": "string",
-                          "example": "Não Finalizado"
-                        },
-                        "updatedAt": {
-                          "description": "Data de atualização da entrega",
-                          "type": "string",
-                          "example": "2025-01-28 16:37:43"
-                        },
-                        "reason": {
-                          "description": "Código do motivo de Não Finalização da entrega",
-                          "type": "integer",
-                          "example": 5
-                        },
-                        "fleet": {
-                          "description": "Informações do entregador",
                           "type": "object",
                           "properties": {
-                            "id": {
-                              "description": "Identificador do entregador",
-                              "type": "integer",
-                              "example": 2033
-                            },
-                            "name": {
-                              "description": "Nome do entregador",
+                            "orderId": {
+                              "description": "Número da entrega na operação",
                               "type": "string",
-                              "example": "Matheus Costa K."
-                            }
-                          }
-                        },
-                        "status_history": {
-                          "description": "Histórico de status da entrega",
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "status": {
-                                "description": "Status da entrega",
-                                "type": "string",
-                                "example": "Em Aberto"
-                              },
-                              "timestamp": {
-                                "description": "Data de atualização do status da entrega",
-                                "type": "string",
-                                "example": "2025-01-27 13:11:45"
-                              },
-                              "latitude": {
-                                "description": "Coordenada de latitude da alteração de status da entrega",
-                                "type": "number",
-                                "example": 123.123123
-                              },
-                              "longitude": {
-                                "description": "Coordenada de longitude da alteração de status da entrega",
-                                "type": "number",
-                                "example": 123.123123
-                              },
-                              "attachments": {
-                                "type": "array",
-                                "items": {
-                                  "type": "object",
-                                  "properties": {
-                                    "type": {
-                                      "type": "string",
-                                      "example": "photo",
-                                      "description": "Tipo de anexo. photo = Foto, signature = Assinatura"
-                                    },
-                                    "fileUrl": {
-                                      "description": "URL do anexo",
-                                      "type": "string",
-                                      "example": "https://example.s3.sa-east-1.amazonaws.com/example.jpg"
-                                    },
-                                    "notFound": {
-                                      "description": "Trackings não encontrados",
-                                      "type": "array",
-                                      "items": {
-                                        "description": "Identificador da entrega não encontrado",
+                              "example": "1"
+                            },
+                            "status": {
+                              "description": "Status da entrega",
+                              "type": "string",
+                              "example": "Não Finalizado"
+                            },
+                            "updatedAt": {
+                              "description": "Data de atualização da entrega",
+                              "type": "string",
+                              "example": "2025-01-28 16:37:43"
+                            },
+                            "reason": {
+                              "description": "Código do motivo de Não Finalização da entrega",
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "fleet": {
+                              "description": "Informações do entregador",
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "description": "Identificador do entregador",
+                                  "type": "integer",
+                                  "example": 2033
+                                },
+                                "name": {
+                                  "description": "Nome do entregador",
+                                  "type": "string",
+                                  "example": "Fulano de Tal"
+                                }
+                              }
+                            },
+                            "status_history": {
+                              "description": "Histórico de status da entrega",
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "status": {
+                                    "description": "Status da entrega",
+                                    "type": "string",
+                                    "example": "Em Aberto"
+                                  },
+                                  "timestamp": {
+                                    "description": "Data de atualização do status da entrega",
+                                    "type": "string",
+                                    "example": "2025-01-27 13:11:45"
+                                  },
+                                  "latitude": {
+                                    "description": "Coordenada de latitude da alteração de status da entrega",
+                                    "type": "number",
+                                    "example": 123.123123
+                                  },
+                                  "longitude": {
+                                    "description": "Coordenada de longitude da alteração de status da entrega",
+                                    "type": "number",
+                                    "example": 123.123123
+                                  },
+                                  "origin": {
+                                    "description": "**ATENÇÃO:** Este campo estará presente somente no status `Finalizado` e somente quando a entrega tiver confirmação por PIN Code. \n Origem da alteração de status da entrega.  \n\n**Possíveis valores:** \n - `Aplicativo do entregador` = Alteração de status feita pelo entregador via aplicativo. \n - `Operador Logístico` = Alteração de status feita pelo operador logístico (empresa de entregas). \n - `Embarcador` = Alteração de status feita pelo embarcador (lojista/restaurante).",
+                                    "type": "string",
+                                    "example": "Aplicativo do entregador"
+                                  },
+                                  "pincode": {
+                                    "description": "**ATENÇÃO:** Este campo estará presente somente no status `Finalizado` e somente quando a entrega tiver confirmação por PIN Code. \n Informações do PIN Code",
+                                    "type": "object",
+                                    "properties": {
+                                      "confirmed": {
+                                        "description": "Indica se o PIN Code foi confirmado",
+                                        "type": "boolean",
+                                        "example": true
+                                      },
+                                      "timestamp": {
+                                        "description": "Data e hora (UTC) da tentativa de confirmação do PIN Code",
                                         "type": "string",
-                                        "example": "051aa70b607f97beeba3f5f9ee2a6b984a9f1489c3a74d6083afc59e1685cb2a"
+                                        "example": "2026-02-11 18:44:36"
+                                      },
+                                      "latitude": {
+                                        "description": "Coordenada de latitude da tentativa de confirmação do PIN Code",
+                                        "type": "number",
+                                        "example": 123.123123
+                                      },
+                                      "longitude": {
+                                        "description": "Coordenada de longitude da tentativa de confirmação do PIN Code",
+                                        "type": "number",
+                                        "example": 123.123123
+                                      },
+                                      "attempts": {
+                                        "description": "Quantidade de tentativas de confirmação do PIN Code",
+                                        "type": "integer",
+                                        "example": 3
+                                      }
+                                    }
+                                  }
+                                },
+                                "attachments": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "type": "string",
+                                        "example": "photo",
+                                        "description": "Tipo de anexo. photo = Foto, signature = Assinatura"
+                                      },
+                                      "fileUrl": {
+                                        "description": "URL do anexo",
+                                        "type": "string",
+                                        "example": "https://example.s3.sa-east-1.amazonaws.com/example.jpg"
                                       }
                                     }
                                   }
@@ -2915,6 +2953,48 @@
                             }
                           }
                         }
+                      },
+                      "example": {
+                        "a2bc5861e95cfa3806d47a3c9841f9a489b6a2ee9f5f3abeeb79f706b07aa150": {
+                          "orderId": null,
+                          "status": "Finalizado",
+                          "updatedAt": "2026-02-11 18:42:11",
+                          "fleet": {
+                            "id": 2033,
+                            "name": "Fulano de Tal"
+                          },
+                          "status_history": [
+                            {
+                              "status": "Em Aberto",
+                              "timestamp": "2026-02-11 18:41:17",
+                              "latitude": null,
+                              "longitude": null
+                            },
+                            {
+                              "timestamp": "2026-02-11 18:42:11",
+                              "latitude": "-29.1234568",
+                              "longitude": "1.9876543",
+                              "status": "Finalizado",
+                              "origin": "Aplicativo do entregador",
+                              "pincode": {
+                                "confirmed": true,
+                                "timestamp": "2026-02-11 18:44:36",
+                                "latitude": "-29.1234568",
+                                "longitude": "1.9876543",
+                                "attempts": 3
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "notFound": {
+                      "description": "Trackings não encontrados",
+                      "type": "array",
+                      "items": {
+                        "description": "Identificador da entrega não encontrado",
+                        "type": "string",
+                        "example": "051aa70b607f97beeba3f5f9ee2a6b984a9f1489c3a74d6083afc59e1685cb2a"
                       }
                     }
                   }
