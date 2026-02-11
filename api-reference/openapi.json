@@ -1287,7 +1287,7 @@
                         "pincode": {
                           "type": "boolean",
                           "description": "Define se a entrega terá confirmação por PIN Code. Quando enviado como `true`, será retornado o campo `pincode` na resposta da criação da entrega. **ATENÇÃO:** É importante que guarde o valor, pois não será fornecido posteriormente.",
-                          "example": true
+                          "example": false
                         },
                         "orderId": {
                           "type": "string",
