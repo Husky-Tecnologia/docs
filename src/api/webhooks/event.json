@@ -114,6 +114,17 @@
         },
         "WebhookEvent": {
             "type": "object",
+            "oneOf": [
+                {
+                    "$ref": "#/components/schemas/EventOrderResourceCreated"
+                },
+                {
+                    "$ref": "#/components/schemas/EventOrderResourceUpdated"
+                },
+                {
+                    "$ref": "#/components/schemas/EventOrderResourceStatusUpdated"
+                }
+            ],
             "discriminator": {
                 "propertyName": "event",
                 "mapping": {
