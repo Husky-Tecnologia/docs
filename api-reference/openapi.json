@@ -159,6 +159,30 @@
           },
           {
             "$ref": "#/components/schemas/EventOrderResourceStatusUpdated"
+          },
+          {
+            "$ref": "#/components/schemas/EventOrderResourceDriverUpdated"
+          },
+          {
+            "$ref": "#/components/schemas/EventClientResourceCreated"
+          },
+          {
+            "$ref": "#/components/schemas/EventClientResourceUpdated"
+          },
+          {
+            "$ref": "#/components/schemas/EventClientResourceStatusUpdated"
+          },
+          {
+            "$ref": "#/components/schemas/EventDriverResourceCreated"
+          },
+          {
+            "$ref": "#/components/schemas/EventDriverResourceUpdated"
+          },
+          {
+            "$ref": "#/components/schemas/EventDriverResourceStatusUpdated"
+          },
+          {
+            "$ref": "#/components/schemas/EventFleetQueue"
           }
         ],
         "discriminator": {
