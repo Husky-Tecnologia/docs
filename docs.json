@@ -62,7 +62,8 @@
           {
             "group": "Entregadores",
             "pages": [
-              "api-reference/entregadores/get-fleet-details"
+              "api-reference/entregadores/get-fleet-details",
+              "api-reference/entregadores/get-fleet-location"
             ]
           },
           {
