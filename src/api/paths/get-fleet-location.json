@@ -1,0 +1,74 @@
+{
+    "path": "/getFleetLocation",
+    "methods": {
+        "get": {
+            "operationId": "getFleetLocation",
+            "tags": [
+                "Entregadores"
+            ],
+            "summary": "Localização de entregador",
+            "description": "Obtém a localização de um entregador com base no seu ID.",
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/live_mode"
+                },
+                {
+                    "$ref": "#/components/parameters/customer"
+                },
+                {
+                    "name": "fleetId",
+                    "in": "query",
+                    "description": "Identificador do entregador",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Localização do entregador obtida com sucesso",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "lat": {
+                                        "type": "number",
+                                        "description": "Latitude da localização do entregador"
+                                    },
+                                    "lng": {
+                                        "type": "number",
+                                        "description": "Longitude da localização do entregador"
+                                    },
+                                    "datetime": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Data e hora da localização do entregador"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "ID do entregador não informado ou limite de requisições atingido."
+                },
+                "401": {
+                    "$ref": "#/components/responses/401"
+                },
+                "404": {
+                    "$ref": "#/components/responses/404"
+                },
+                "405": {
+                    "$ref": "#/components/responses/405"
+                }
+            },
+            "security": [
+                {
+                    "TokenQuery": []
+                }
+            ]
+        }
+    }
+}
