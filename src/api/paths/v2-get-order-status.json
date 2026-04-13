@@ -159,28 +159,27 @@
                                                                         }
                                                                     }
                                                                 }
-                                                            },
-                                                            "attachments": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "type": {
-                                                                            "type": "string",
-                                                                            "example": "photo",
-                                                                            "description": "Tipo de anexo. photo = Foto, signature = Assinatura"
-                                                                        },
-                                                                        "fileUrl": {
-                                                                            "description": "URL do anexo",
-                                                                            "type": "string",
-                                                                            "example": "https://example.s3.sa-east-1.amazonaws.com/example.jpg"
-                                                                        }
-                                                                    }
+                                                            }
+                                                        }
+                                                    },
+                                                    "attachments": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "example": "photo",
+                                                                    "description": "Tipo de anexo. photo = Foto, signature = Assinatura"
+                                                                },
+                                                                "fileUrl": {
+                                                                    "description": "URL do anexo",
+                                                                    "type": "string",
+                                                                    "example": "https://example.s3.sa-east-1.amazonaws.com/example.jpg"
                                                                 }
                                                             }
                                                         }
                                                     }
-                                                    
                                                 }
                                             }
                                         },
