@@ -27,7 +27,10 @@
                                     "type": "array",
                                     "items": {
                                         "type": "string",
-                                        "example": "051aa70b607f97beeba3f5f9ee2a6b984a9f1489c3a74d6083afc59e1685cb2a"
+                                        "example": [
+                                            "051aa70b607f97beeba3f5f9ee2a6b984a9f1489c3a74d6083afc59e1685cb2a",
+                                            "a2bc5861e95cfa3806d47a3c9841f9a489b6a2ee9f5f3abeeb79f706b07aa150"
+                                        ]
                                     }
                                 }
                             }
