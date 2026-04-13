@@ -3045,9 +3045,13 @@
                                 "type": "object",
                                 "properties": {
                                   "type": {
-                                    "type": "string",
+                                    "type": "enum",
+                                    "enum": [
+                                      "photo",
+                                      "signature"
+                                    ],
                                     "example": "photo",
-                                    "description": "Tipo de anexo. photo = Foto, signature = Assinatura"
+                                    "description": "Tipo de anexo. `photo` = Foto evidência da entrega, `signature` = Assinatura do cliente"
                                   },
                                   "fileUrl": {
                                     "description": "URL do anexo",
@@ -3089,6 +3093,16 @@
                                 "longitude": "1.9876543",
                                 "attempts": 3
                               }
+                            }
+                          ],
+                          "attachments": [
+                            {
+                              "type": "photo",
+                              "fileUrl": "https://example.s3.sa-east-1.amazonaws.com/example.jpg"
+                            },
+                            {
+                              "type": "signature",
+                              "fileUrl": "https://example.s3.sa-east-1.amazonaws.com/example.jpg"
                             }
                           ]
                         }
